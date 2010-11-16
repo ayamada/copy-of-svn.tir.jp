@@ -1,0 +1,56 @@
+# $Id$
+GOSH = @GOSH@
+GAUCHE_CONFIG = @GAUCHE_CONFIG@
+INSTALL_TYPE = @INSTALL_TYPE@
+INSTALL = @INSTALL@
+
+TARGET_DIR = tir
+TARGET = version.scm \
+         cgi.scm \
+         format.scm \
+         lock.scm \
+         dbmwl.scm \
+         session.scm \
+         socket-cs.scm \
+         sexp-cs.scm \
+         handler.scm
+
+GENERATED = 
+
+SCM_INSTALL_DIR = $(DESTDIR)`$(GAUCHE_CONFIG) --$(INSTALL_TYPE)libdir`
+
+.PHONY: all clean test check install uninstall distclean maintainer-clean
+
+
+all:
+
+clean:
+	rm -f core *~ *.orig \
+        $(GENERATED)
+
+test:
+
+check:
+
+install: all
+	for f in $(TARGET_DIR); do \
+	  if test ! -d $(SCM_INSTALL_DIR)/$$f; then \
+	    $(INSTALL) -d $(SCM_INSTALL_DIR)/$$f; \
+	  fi; \
+	done; \
+	for f in $(TARGET); do \
+	  $(INSTALL) -m 444 ./$$f $(SCM_INSTALL_DIR)/$$f; \
+	done
+
+uninstall:
+	for f in $(TARGET); do \
+	  rm -f $(SCM_INSTALL_DIR)/$$f; \
+	done
+
+distclean: clean
+	rm -f Makefile
+
+maintainer-clean: clean
+	rm -f Makefile
+
+

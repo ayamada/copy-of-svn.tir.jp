@@ -1,0 +1,31 @@
+Status: 500 Internal Server Error
+Content-Type: text/html; charset=EUC-JP
+Pragma: no-cache
+Cache-Control: no-cache
+
+<?xml version="1.0" encoding="EUC-JP"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="ja-JP" xml:lang="ja-JP" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=EUC-JP" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="ROBOTS" content="NOINDEX,NOFOLLOW" />
+    <title>現在メンテ中</title>
+    <link rel="Stylesheet" type="text/css" href="http://css.tir.jp/tir.css" />
+  </head>
+  <body class="wireframe01">
+    <div>
+      <h1>現在メンテ中</h1>
+      <p>大変申し訳ございませんが、現在メンテ作業を行っておりますので、アクセスする事ができません。<br />
+      しばらくお待ち下さいますよう、お願い致します。</p>
+      <p>尚、しばらく待っても復旧しない場合は、お手数ですが、下のボタンを押して、管理者に催促の通知を行って下さい。</p>
+      <p>大変申し訳ございませんが、どうかよろしくお願い致します。</p>
+      <form action="http://d.tir.jp/msg.cgi" method="post" target="_blank" class="inline_centering">
+        <input type="hidden" name="_ci" value="ウボア" />
+        <input type="submit" name="msg" value="通知内容 : aml.tir.jpが閲覧できるように、サッサと直しやがって下さい" />
+      </form>
+    </div>
+  </body>
+</html>
+<!-- vim:set ft=xhtml ts=8 sts=2 sw=2 et: -->

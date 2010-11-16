@@ -1,0 +1,27 @@
+2005-10-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* Gauche-www-cgi-dispatch-tir : 0.0.2 release
+
+
+2005-10-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* sample/sample.cgi :
+	  - サンプルスクリプトのgoshの起動パスを/usr/bin/env経由に変更
+
+
+2005-10-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* Gauche-www-cgi-dispatch-tir : 0.0.1 release
+
+
+2005-10-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* Gauche-www-cgi-dispatch-tir : started
+	  - 開発リポジトリを、ktestから移動。
+	  - パッケージ用ファイルのテンプレートとして、
+	    pipehttpから各種ファイルをコピーし、少し整頓した。
+	  - gen-versionが、www/cgi/dispatch-tir/version.scm を
+	    生成するように修正。
+
+
+$Id$

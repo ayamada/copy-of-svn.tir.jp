@@ -1,0 +1,60 @@
+# $Id$
+# vim:set ft=squid ts=8 sts=2 sw=2 et:
+https_port 210.224.176.48:443 cert=./asterisk.tir.jp.keycert.pem
+cache_effective_user squid
+
+cache_dir   ufs  ./cache 64 16 256
+cache_access_log ./logs/access.log
+cache_log        ./logs/cache.log
+cache_store_log  ./logs/store.log
+referer_log      ./logs/referer.log
+pid_filename     ./logs/squid.pid
+emulate_httpd_log on
+logfile_rotate 16
+coredump_dir     .
+error_directory  ./errors
+
+acl so_tir_jp src 210.224.176.48/28
+acl to_so_tir_jp dst 210.224.176.48/28
+acl all src 0.0.0.0/0.0.0.0
+acl manager proto cache_object
+acl localhost src 127.0.0.1/255.255.255.255
+acl to_localhost dst 127.0.0.0/8
+acl ssl_ports port 443
+acl tcpcgi_ports port 40000-40999
+acl CONNECT method CONNECT
+
+redirector_access allow all
+http_access deny manager !localhost
+http_access deny !ssl_ports !tcpcgi_ports
+http_access deny CONNECT
+http_access allow to_so_tir_jp
+http_access deny all
+http_reply_access allow to_localhost
+http_reply_access deny all
+icp_access deny all
+
+cache_mem 2 MB
+maximum_object_size 16 MB
+minimum_object_size 0 KB
+maximum_object_size_in_memory 256 KB
+memory_pools_limit 4 MB
+request_header_max_size 8 KB
+request_body_max_size 1024 KB
+reply_header_max_size 8 KB
+reply_body_max_size 0 allow all
+pipeline_prefetch off
+refresh_pattern . 0 20% 4320
+negative_ttl 1 minutes
+forwarded_for on
+client_persistent_connections on
+server_persistent_connections on
+
+redirect_program /usr/local/gauche/bin/gosh ./goshredir.scm ./goshredir.conf
+redirect_children 2
+redirect_rewrites_host_header off
+
+httpd_accel_host 127.0.0.1
+httpd_accel_single_host off
+httpd_accel_with_proxy off
+httpd_accel_uses_host_header on

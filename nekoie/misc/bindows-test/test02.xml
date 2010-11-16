@@ -1,0 +1,26 @@
+<Application>
+
+	<Window caption="XML-RPC Test" width="400" height="300">
+		<Command id="send-command" shortcut="Alt+S"/>
+		<SplitPane orientation="vertical" left="0" right="0" top="0" bottom="20">
+			<Component>
+				<TextArea id="js-source" left="0" top="0" right="90" bottom="0">["Hello World", 1, true]</TextArea>
+				<Button command="#send-command" top="5" right="5" width="80" height="24" text="Send"
+					mnemonic="s"/>
+			</Component>
+			<TextArea id="result" left="0" top="0" right="85" bottom="0" readOnly="true"/>
+		</SplitPane>
+		<StatusBar left="0" right="0" bottom="0">
+			<StatusBarPanel left="0" right="100" id="status"/>
+			<StatusBarPanel width="98" right="0">
+				<UndeterminedProgressBar id="pb" left="0" right="0" top="0" bottom="0" border="0"
+					visible="false" backColor="transparent"/>
+			</StatusBarPanel>
+		</StatusBar>
+	</Window>
+	<Resources>
+		<Script src="./test02.js"/>
+	</Resources>
+</Application>
+
+<!-- vim:set ts=8 sw=8 sts=8: -->

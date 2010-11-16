@@ -1,0 +1,4 @@
+#!/bin/sh
+# $Id$
+printf "\007"
+# vim:set ft=sh sw=2 ts=2 et:

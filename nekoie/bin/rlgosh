@@ -1,0 +1,4 @@
+#!/bin/sh
+# $Id$
+exec rlwrap -b"'\"(){}[],#|\\" gosh "$@"
+# vim:set ft=sh sw=2 ts=2 et:

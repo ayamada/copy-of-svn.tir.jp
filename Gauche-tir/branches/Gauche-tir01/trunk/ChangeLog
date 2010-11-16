@@ -1,0 +1,100 @@
+2005-03-17  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir : moved
+	  - ディレクトリ構造を変更
+	  - miscモジュールを分割
+	    今後は、miscモジュールは使わない方針とする
+
+
+2005-07-10  yamada <yamada-remove-this-part@tir.jp>
+
+        * tir : 0.0.6 release
+
+
+2005-07-10  yamada <yamada-remove-this-part@tir.jp>
+
+        * tir/misc.scm : fixed bug
+          - with-signal-handler
+
+
+2005-03-06  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir : 0.0.5 release
+
+
+2005-03-06  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir/misc.scm : fixed bug
+	  - completion-uri
+
+
+2005-03-06  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir : 0.0.4 release
+
+
+2005-03-06  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir/misc.scm : extended
+	  - completion-uri
+
+
+2005-03-06  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir : 0.0.3 release
+
+
+2005-03-05  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir/misc.scm : extended
+	  - make-url-from-form-params
+
+
+2005-02-01  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir/misc.scm : extended
+	  - set-temporary-state!
+	  - with-port-buffering
+	  - with-signal-handler
+
+
+2005-01-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir : 0.0.2 release
+
+
+2005-01-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir/misc.scm : fixed bug and extended
+	  - cgi-metavariables->html
+	    cgi-metavariablesが#fの時に対応
+	  - make-view-cgi-metavariables-thunk 追加
+
+
+2005-01-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir : 0.0.1 release
+
+
+2005-01-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir/misc.scm : extended
+	  - cgi-metavariables->html
+
+
+2005-01-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir : 0.0.0 release
+
+
+2005-01-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir/misc.scm : added
+
+
+2005-01-26  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir : start
+
+
+$Id$

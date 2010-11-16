@@ -1,0 +1,49 @@
+--- vim63/src/skklib.c.orig	2004-09-15 07:37:53.000000000 +0900
++++ vim63/src/skklib.c	2004-09-15 07:44:50.000000000 +0900
+@@ -283,6 +283,7 @@
+ 	char *wd;
+ 	struct stat sbuf;
+ 	int old = 0;
++	int merge_flag = 0;
+ 
+ 	if (dicname)
+ 	{
+@@ -294,7 +295,8 @@
+ 		if ((stat(dicname, &sbuf) == 0) && (sbuf.st_size != 0)) {
+ 			if (dic->mtime < sbuf.st_mtime) {
+ 				MSG("The dictionary is changed. merging...");
+-				mergeDictionary(dic,dicname);
++				/* mergeDictionary(dic,dicname); */
++				merge_flag = 1;
+ 			}
+ 			rename(dicname,buf);
+ 			old = 1;
+@@ -320,6 +322,28 @@
+ 		fclose(f);
+ 		if (old)
+ 			chmod(dicname,sbuf.st_mode);
++		/* dirty hack : use skkdic-expr and skkdir-sort. */
++		if (merge_flag &&
++				(system("skkdic-expr 2> /dev/null") == 256)) {
++			char *cmdline;
++			cmdline = alloc(512);
++			sprintf(cmdline,
++				"cat %s %s.BAK > %s.TMP",
++				dicname,
++				dicname,
++				dicname);
++			system(cmdline);
++			sprintf(cmdline,
++				"skkdic-expr %s.TMP | skkdic-sort > %s",
++				dicname,
++				dicname);
++			system(cmdline);
++			sprintf(cmdline,
++				"rm %s.TMP",
++				dicname);
++			system(cmdline);
++			free(cmdline);
++		}
+ 
+ 		for (l = 0; l < HASHSIZE; l++) {
+ 			Hash h1, h2;

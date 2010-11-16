@@ -1,0 +1,5 @@
+ErrorDocument 500 /500.asis
+Options +ExecCGI
+<Files "contents">
+  SetHandler cgi-script
+</Files>

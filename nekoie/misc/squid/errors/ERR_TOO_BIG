@@ -1,0 +1,14 @@
+<html>
+<head>
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="ROBOTS" content="NOINDEX,NOFOLLOW" />
+<title>413 Request Entity Too Large</title>
+<link rel="Stylesheet" type="text/css" href="http://css.tir.jp/server.css" />
+</head>
+<body>
+<h1>Request Entity Too Large</h1>
+<p>the amount of data provided in the request exceeds the capacity limit.</p>
+<hr />
+<address>%s</address>
+</body>
+</html>

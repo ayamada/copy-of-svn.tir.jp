@@ -1,0 +1,14 @@
+<html>
+<head>
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="ROBOTS" content="NOINDEX,NOFOLLOW" />
+<title>403 Forbidden</title>
+<link rel="Stylesheet" type="text/css" href="http://css.tir.jp/server.css" />
+</head>
+<body>
+<h1>Forbidden</h1>
+<p>You don't have permission to access here.</p>
+<hr />
+<address>%s</address>
+</body>
+</html>

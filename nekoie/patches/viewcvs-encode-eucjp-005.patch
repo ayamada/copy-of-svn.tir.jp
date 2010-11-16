@@ -1,0 +1,80 @@
+--- lib/viewcvs.py.orig	2004-12-30 16:46:23.000000000 +0900
++++ lib/viewcvs.py	2005-01-11 08:07:39.000000000 +0900
+@@ -67,6 +67,7 @@
+ import ezt
+ import accept
+ import vclib
++import pykf
+ 
+ debug.t_end('imports')
+ 
+@@ -760,17 +761,31 @@
+ # addresses.  Note that the regexps assume the text is already HTML-encoded.
+ _re_rewrite_url = re.compile('((http|https|ftp|file|svn|svn\+ssh)(://[-a-zA-Z0-9%.~:_/]+)((\?|\&amp;)([-a-zA-Z0-9%.~:_]+)=([-a-zA-Z0-9%.~:_])+)*(#([-a-zA-Z0-9%.~:_]+)?)?)')
+ _re_rewrite_email = re.compile('([-a-zA-Z0-9_.\+]+)@(([-a-zA-Z0-9]+\.)+[A-Za-z]{2,4})')
++def toeuc(txt):
++  """pykf.guess cannot guess utf-8 string (wrong to sjis)"""
++  c = pykf.guess(txt)
++  if c is pykf.JIS:
++    u = unicode(txt, 'japanese.iso-2022-jp')
++    return u.encode('japanese.euc-jp')
++  #for enc in ['utf-8', 'japanese.euc-jp', 'japanese.shift_jis', 'japanese.iso-2022-jp']:
++  for enc in ['utf-8', 'japanese.euc-jp', 'japanese.shift_jis']:
++    try:
++      u = unicode(txt, enc)
++      return u.encode('japanese.euc-jp')
++    except UnicodeError:
++      pass
++  return txt
++
+ def htmlify(html):
++  html = toeuc(html)
+   html = cgi.escape(html)
+   html = re.sub(_re_rewrite_url, r'<a href="\1">\1</a>', html)
+   html = re.sub(_re_rewrite_email, r'<a href="mailto:\1&#64;\2">\1&#64;\2</a>', html)
+   return html
+ 
+ def format_log(log):
+-  s = htmlify(log[:cfg.options.short_log_len])
+-  if len(log) > cfg.options.short_log_len:
+-    s = s + '...'
+-  return s
++  """do not splice middle of multibyte char"""
++  return htmlify(log)
+ 
+ _time_desc = {
+          1 : 'second',
+@@ -926,11 +941,18 @@
+     # tracking the fp and whether or not to htmlize() the stuff read
+     # from that fp).  We read from a given fp only after exhausting
+     # all the ones prior to it in the list.
++    fpstr = ''
++    while 1:
++      chunk = retry_read(fp)
++      if not chunk:
++        break
++      fpstr = fpstr + chunk
++    fpstr = htmlify(fpstr)
+     self.fps = []
+     if pretext:
+       self.fps.append([MarkupBuffer(pretext), 0])
+     if fp:
+-      self.fps.append([fp, htmlize])
++      self.fps.append([MarkupBuffer(fpstr), 0])
+     if posttext:
+       self.fps.append([MarkupBuffer(posttext), 0])
+     self.which_fp = 0
+@@ -983,6 +1005,13 @@
+                     '--color', '--language=html', '--pretty-print=' + lang,
+                     '-o', self.temp_file, '-']
+     try:
++      buf = ''
++      while 1:
++        chunk = retry_read(fp)
++        if not chunk:
++          break
++        buf = buf + chunk
++      fp = MarkupBuffer(toeuc(buf))
+       copy_stream(fp, popen.pipe_cmds([enscript_cmd]))
+       fp.close()
+     except IOError:

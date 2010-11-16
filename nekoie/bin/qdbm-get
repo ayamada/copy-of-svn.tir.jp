@@ -1,0 +1,35 @@
+#!/usr/bin/env gosh
+;;; coding: euc-jp
+;;; -*- scheme -*-
+;;; vim:set ft=scheme ts=8 sts=2 sw=2 et:
+;;; $Id$
+
+(use dbm.qdbm)
+
+;;; ----
+
+(define (qdbm-get file key)
+  (let1 qdbm (make <qdbm>
+               :path file
+               :rw-mode :read
+               )
+    (with-error-handler
+      (lambda (e) #f)
+      (lambda ()
+        (dynamic-wind
+          (lambda ()
+            (dbm-open qdbm))
+          (lambda ()
+            (dbm-get qdbm key))
+          (lambda ()
+            (dbm-close qdbm)))))))
+
+(define (main args)
+  (if (= 3 (length args))
+    (begin
+      (qdbm-get (cadr args) (caddr args))
+      0)
+    (begin
+      (print "usage: qdbm-get filename.qdbm key-str")
+      1)))
+

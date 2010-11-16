@@ -1,0 +1,43 @@
+2006-09-16  yamada <yamada-remove-this-part@tir.jp>
+
+	* Gauche-tir03 : 0.0.4 release
+
+
+2006-09-16  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir03.cgi : cgi-main/* bugs fixed
+
+
+2006-09-16  yamada <yamada-remove-this-part@tir.jp>
+
+	* Gauche-tir03 : 0.0.3 release
+
+
+2006-09-16  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir03.cgi : fixed to forgot (use srfi-1)
+
+
+2006-09-16  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir03.util.random :
+	  - list-dice implemented
+	  - optimization dice-1 when rand-max = 0
+
+
+2006-09-16  yamada <yamada-remove-this-part@tir.jp>
+
+	* Gauche-tir03 : 0.0.2 release
+
+
+2006-09-16  yamada <yamada-remove-this-part@tir.jp>
+
+	* Gauche-tir03 : Makefile bugs fixed
+
+
+2006-09-16  yamada <yamada-remove-this-part@tir.jp>
+
+	* Gauche-tir03 : 0.0.1 release
+
+
+$Id$

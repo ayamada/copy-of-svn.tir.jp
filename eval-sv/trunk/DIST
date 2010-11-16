@@ -1,0 +1,54 @@
+#!/bin/sh
+# $Id$
+#
+# A helper script for developers.
+#  ./DIST gen  : runs autoconf to generate 'configure' script.
+#  ./DIST tgz  : creates a tarball.
+# Assumes gnu tar.
+
+MODULE=eval-sv
+
+while [ $# -gt 0 ]; do
+  case $1 in
+    gen) gen=yes; shift ;;
+    tgz) tgz=yes; shift ;;
+    *) echo "DIST [gen|tgz]"; exit 0;;
+  esac
+done
+
+if [ "$gen" = "yes" ]; then
+  autoconf -I `gauche-config --ac`
+  ./configure || (echo "cannot execute ./configure"; exit 1)
+  gosh gen-version VERSION
+  make distclean
+fi
+
+
+if [ "$tgz" = "yes" ]; then
+  if [ -f Makefile ]; then make maintainer-clean; fi
+  ./DIST gen
+  ./configure
+  make distclean
+
+  if [ ! -f VERSION ]; then echo "no VERSION -- something wrong?"; exit 1; fi
+  VERSION=`cat VERSION`
+
+  rm -f DIST_EXCLUDE_X
+  echo DIST > DIST_EXCLUDE_X
+  echo DIST_EXCLUDE_X >> DIST_EXCLUDE_X
+  if [ -f DIST_EXCLUDE ]; then
+    echo DIST_EXCLUDE >> DIST_EXCLUDE_X
+    cat DIST_EXCLUDE >> DIST_EXCLUDE_X
+  fi
+  find . -name CVS -print -prune >> DIST_EXCLUDE_X
+  find . -name .svn -print -prune >> DIST_EXCLUDE_X
+
+  rm -rf ../$MODULE-$VERSION
+  rm -rf ../$MODULE-$VERSION.tgz
+
+  mkdir ../$MODULE-$VERSION
+  tar cvfX - DIST_EXCLUDE_X . | (cd ../$MODULE-$VERSION; tar xf -)
+  (cd ..; tar cvf - $MODULE-$VERSION | gzip -9 > $MODULE-$VERSION.tgz)
+  (cd ..; rm -rf $MODULE-$VERSION)
+fi
+

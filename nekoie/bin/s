@@ -1,0 +1,5 @@
+#!/bin/sh
+# $Id$
+#export TERM=vt100
+exec screen "$@"
+# vim:set ft=sh sw=2 ts=2 et:

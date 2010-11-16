@@ -1,0 +1,4 @@
+#!/bin/sh
+# $Id$
+exec ls --show-control-chars "$@"
+# vim:set ft=sh sw=2 ts=2 et:

@@ -1,0 +1,7 @@
+;;; coding: euc-jp
+;;; -*- scheme -*-
+;;; vim:set ft=scheme ts=8 sts=2 sw=2 et:
+;;; $Id$
+("http://e.tir.jp/ktest/"    "http://127.0.0.1:40001/ktest/")
+("http://e.tir.jp/bindows-test"    "http://127.0.0.1:40001/bindows-test")
+("http://e.tir.jp"    "http://127.0.0.1:40000")

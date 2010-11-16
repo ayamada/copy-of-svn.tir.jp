@@ -1,0 +1,15 @@
+#!/bin/sh
+(
+  ulimit -HSc unlimited
+  ulimit -HSd unlimited
+  ulimit -HSf unlimited
+  ulimit -HSl 32
+  ulimit -HSm unlimited
+  ulimit -HSn 8192
+  ulimit -HSs 8192
+  ulimit -HSt unlimited
+  ulimit -HSu 1024
+  ulimit -HSv unlimited
+  cd /var/lib/squid-ssl/111.222.33.44
+  /usr/local/squid/sbin/squid -f ./squid.conf "$@"
+)

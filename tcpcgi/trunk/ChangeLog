@@ -1,0 +1,262 @@
+2005-10-02  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : 0.4.4.2 release
+
+
+2005-10-02  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : fixed bugs
+	  - まだ、正常に、
+	    Content-Length: 0
+	    が除去できていず、二重にContent-Lengthを送っていた問題を修正
+
+
+2005-10-02  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : 0.4.4.1 release
+
+
+2005-10-02  yamada <yamada-remove-this-part@tir.jp>
+
+        * tcpcgi : fixed bugs for 0.4.4
+          - 302のlocation時に、誤って、
+            Content-Length: 0を送ってしまっていた問題を修正
+            (現trunkでは既に修正済)
+
+
+2005-02-05  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : testcase added
+	  - test/dispatch.scm追加
+	  - test/execute.scm追加
+	  - test/parsed-header.scm追加
+
+	* tcpcgi/errordoc.scm : renamed
+	  - tcpcgi/error-document.scmに名前変更
+
+
+2005-02-04  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi.scm, tcpcgi-server.scm : *** IMPORTANT CHANGES ***
+	  - <tcpcgi>, <tcpcgi-server>の
+	    - :vhost-dispatch
+	    - :path-dispatch
+	    - :fallback-dispatch
+	    は、
+	    - :dispatch-vhost
+	    - :dispatch-path
+	    - :dispatch-fallback
+	    に名前変更
+
+	* tcpcgi/dispatch.scm : moved
+	  - tcpcgi/execute/dispatch.scm
+	    を、
+	    tcpcgi/dispatch.scm
+	    に戻す
+
+
+2005-02-03  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : testcase added
+	  - test/metavariables.scm追加
+
+
+2005-02-02  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi.scm : modified 
+	  - response-timeoutをcgi-thunk-timeoutに変更
+	    初期値を10秒に変更
+
+	* tcpcgi/common.scm : added
+	  - tcpcgi.scmから分離
+
+	* tcpcgi/request.scm : added
+	  - tcpcgi.scmから分離
+
+	* tcpcgi : testcase added
+	  - test/request.scm追加
+
+
+2005-02-01  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi/dispatch.scm, tcpcgi/filer.scm : moved
+	  - それぞれ、
+	    - tcpcgi/execute/dispatch.scm
+	    - tcpcgi/execute/filer.scm
+	    に移動
+
+	* tcpcgi/execute.scm : added
+	  - 分岐部分とcgi実行部分をモジュール化
+
+	* tcpcgi/metavariables.scm, tcpcgi/parsed-header.scm : added
+	  - tcpcgi.scmから分離
+
+
+2005-01-31  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi.scm, tcpcgi-server.scm : *** IMPORTANT CHANGES ***
+	  - <tcpcgi>, <tcpcgi-server>の:none-dispatchは、
+	    :fallback-dispatchに名前変更
+	  - :nphキーワードは廃止
+	    nphスクリプトは新しい構文で指定する事
+	  - 構文の強化
+	    設定例は、tcpcgi-kickstart.scm等で確認する事
+
+	* tcpcgi/supplement.scm : added
+	  - テスト用途によく使用されるcgiスクリプトを提供
+
+
+2005-01-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi.scm : modified 
+	  - 500エラーが発生した場合は、persistent connetcionを使わずに、
+	    レスポンスが終了次第、接続を切るようにした
+
+
+2005-01-29  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : 0.4.4 release
+
+
+2005-01-29  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi/filer.scm : modified
+	  - mime/typeを少し増やす
+
+
+2005-01-25  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi/filer.scm : modified
+	  - ドットファイルは表示させないようにした
+
+
+2005-01-23  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : 0.4.3 release
+
+
+2005-01-23  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi.scm : extended
+	  - msnbotはrequest-uriを生utf-8で送ってくるが、
+	    gaucheのnative-encodingがutf-8以外の時に、
+	    www.cgiがそれを解釈できずにエラーを出してしまうので、
+	    それを回避する為に変換機能を付けてみた
+
+
+2005-01-21  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : 0.4.2 release
+
+
+2005-01-21  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi.scm : extended and fixed bugs
+	  - ログにsys-timeのepoch秒を含める
+	  - max-requests-per-childを実装
+	  - クライアント側からshutdownされた時にエラーにならないようにした
+
+	* tcpcgi-server.scm : fixed bugs
+	  - forkした親プロセスでもclient-socketをcloseするようにした
+	  - クライアント側からshutdownされた時にエラーにならないようにした
+	  - シグナルキャッチ時にpidもログに残す
+
+
+2005-01-17  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : 0.4.1 release
+
+
+2005-01-17  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi-server.scm : modified
+	  - 最大同時接続数の名前をmax-connectionから
+	    max-clientsに変更
+
+
+2005-01-17  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : 0.4 release
+
+
+2005-01-17  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi-server.scm : added
+	  - 作った
+
+	* tcpcgi.scm : fixed bug and modified
+	  - ログに「tcpcgi: 」のprefixを付けるようにした
+	  - :log-port, :cgi-error-portに#fを指定した時に
+	    エラーが発生する部分があったので修正した
+
+
+2005-01-15  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : 0.3 release
+
+
+2005-01-15  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi/dispatch.scm : extended
+	  - vhostでのディスパッチに対応
+
+
+2005-01-13  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi.scm : fixed bug
+	  - ログ出力のバッファリングモードを強制的に:lineにするようにした
+	    （そうしないと、multilogが混ぜてしまう事があるっぽい）
+
+
+2005-01-13  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi.scm : fixed bug
+	  - squidが「Connection: keep-alive」と、小文字で送ってくるのに対応
+
+
+2005-01-13  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : 0.2.1 release
+
+
+2005-01-13  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi.scm : fixed bug
+	  - remote-addrとserver-addrを間違えていた箇所があったので修正
+
+
+2005-01-11  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : 0.2 release
+
+
+2005-01-11  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi.scm : extended and fixed bugs
+	  - シグナルを受けた場合は、report-errorしない
+	  - SIGPIPE, SIGTERM, SIGINT, SIGHUPを受けたら次の接続は行わない
+	  - HTTP/1.0のConnection: Keep-Aliveにも対応
+	  - リクエストヘッダのConnection: closeに対応
+	  - filerの呼び出し元をtcpcgi/dispatch.scmから移動
+
+	* tcpcgi/state.scm : modified
+	  - スロット名微変更
+
+	* tcpcgi/filer.scm : added
+	  - とりあえず、内蔵mimeで簡易判定のみ行うバージョン
+
+	* tcpcgi/errordoc.scm : extended and modified
+	  - tcpcgi.scmから、ディスパッチ部分を移動してくる
+
+
+2005-01-10  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : 0.1 release
+
+
+2005-01-05  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : started
+
+
+$Id$

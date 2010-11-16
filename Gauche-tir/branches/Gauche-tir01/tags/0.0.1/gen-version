@@ -1,0 +1,16 @@
+;;; coding: euc-jp
+;;; -*- scheme -*-
+;;; vim:set ft=scheme ts=8 sts=2 sw=2 et:
+;;; $Id$
+
+(define (main args)
+  (let* ((vfile  (cadr args))
+         (verstr (call-with-input-file vfile read-line)))
+    (write `(define-module tir.version
+              (export gauche-tir-version)
+              (define (gauche-tir-version) ,verstr)
+              (provide "tir/version")))
+    (newline)
+    (flush))
+  0)
+

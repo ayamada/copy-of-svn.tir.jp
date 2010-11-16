@@ -1,0 +1,40 @@
+2005-01-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir : 0.0.2 release
+
+
+2005-01-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir/misc.scm : fixed bug and extended
+	  - cgi-metavariables->html
+	    cgi-metavariablesが#fの時に対応
+	  - make-view-cgi-metavariables-thunk 追加
+
+
+2005-01-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir : 0.0.1 release
+
+
+2005-01-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir/misc.scm : added
+	  - cgi-metavariables->html
+
+
+2005-01-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir : 0.0.0 release
+
+
+2005-01-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir/misc.scm : added
+
+
+2005-01-26  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir : start
+
+
+$Id$

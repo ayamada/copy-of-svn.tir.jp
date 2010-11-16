@@ -1,0 +1,18 @@
+;;;
+;;; qnblib.stub
+;;;
+
+"
+#include \"qnb.h\"
+"
+
+;; The following entry is a dummy one.
+;; Replace it for your definitions.
+
+(define-cproc test-qnb ()
+  (return "test_qnb"))
+
+
+;; Local variables:
+;; mode: scheme
+;; end:

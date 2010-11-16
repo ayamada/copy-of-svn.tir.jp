@@ -1,0 +1,41 @@
+;;; coding: euc-jp
+;;; -*- scheme -*-
+;;; vim:set ft=scheme ts=8 sts=2 sw=2 et:
+;;; $Id$
+
+(define *module-name* "tir04")
+
+(define *library-directory* "lib")
+
+(define *version-module-symbol*
+  (string->symbol
+    (string-append *module-name* ".version")))
+
+(define *version-module-provide*
+  (module-name->path *version-module-symbol*))
+
+(define *module-extension* ".scm")
+
+(define *version-module-file*
+  (string-append
+    *library-directory* "/" *version-module-provide* *module-extension*))
+
+(define *version-function-symbol*
+  (string->symbol
+    (string-append *module-name* "-version")))
+
+
+(define (main args)
+  (let* ((vfile  (cadr args))
+         (verstr (call-with-input-file vfile read-line)))
+    (with-output-to-file
+      *version-module-file*
+      (lambda ()
+        (write `(define-module ,*version-module-symbol*
+                  (export ,*version-function-symbol*)
+                  (define (,*version-function-symbol*) ,verstr)
+                  (provide ,*version-module-provide*)))
+        (newline)
+        (flush))))
+  0)
+

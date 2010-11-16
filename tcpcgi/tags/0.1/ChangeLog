@@ -1,0 +1,12 @@
+2005-01-10  yamada <yamada@tir.jp>
+
+	* tcpcgi : tcpcgi-0.1 release
+	- とりあえず、必要最小限は動作するようになった。筈。
+
+
+2005-01-05  yamada <yamada@tir.jp>
+
+	* tcpcgi : 一旦最初から作り直し。ついでにリポジトリを移行。
+
+
+$Id$

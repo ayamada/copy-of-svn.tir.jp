@@ -1,0 +1,70 @@
+2005-01-15  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : 0.3 release
+
+
+2005-01-15  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi/dispatch.scm : extended
+	  - vhostでのディスパッチに対応
+
+
+2005-01-13  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi.scm : fixed bug
+	  - ログ出力のバッファリングモードを強制的に:lineにするようにした
+	    （そうしないと、multilogが混ぜてしまう事があるっぽい）
+
+
+2005-01-13  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi.scm : fixed bug
+	  - squidが「Connection: keep-alive」と、小文字で送ってくるのに対応
+
+
+2005-01-13  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : 0.2.1 release
+
+
+2005-01-13  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi.scm : fixed bug
+	  - remote-addrとserver-addrを間違えていた箇所があったので修正
+
+
+2005-01-11  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : 0.2 release
+
+
+2005-01-11  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi.scm : extended and fixed bugs
+	  - シグナルを受けた場合は、report-errorしない
+	  - SIGPIPE, SIGTERM, SIGINT, SIGHUPを受けたら次の接続は行わない
+	  - HTTP/1.0のConnection: Keep-Aliveにも対応
+	  - リクエストヘッダのConnection: closeに対応
+	  - filerの呼び出し元をtcpcgi/dispatch.scmから移動
+
+	* tcpcgi/state.scm : modified
+	  - スロット名微変更
+
+	* tcpcgi/filer.scm : added
+	  - とりあえず、内蔵mimeで簡易判定のみ行うバージョン
+
+	* tcpcgi/errordoc.scm : extended and modified
+	  - tcpcgi.scmから、ディスパッチ部分を移動してくる
+
+
+2005-01-10  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : 0.1 release
+
+
+2005-01-05  yamada <yamada-remove-this-part@tir.jp>
+
+	* tcpcgi : started
+
+
+$Id$

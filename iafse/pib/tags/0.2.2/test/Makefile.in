@@ -1,0 +1,32 @@
+GOSH = @GOSH@
+TEST_OUT = test.log
+TESTS = \
+	pib.scm
+
+.PHONY: all clean test check distclean maintainer-clean
+
+
+
+
+all: gosh-path
+
+gosh-path :
+	echo "$(GOSH)" > gosh-path
+
+clean :
+	rm -rf core gosh-path $(TEST_OUT) *~
+
+test : check
+
+check : all
+	rm -rf $(TEST_OUT)
+	for t in $(TESTS); do \
+	  $(GOSH) -I. -I../lib $$t >> test.log; \
+	done
+
+distclean : clean
+	rm -f Makefile
+
+maintainer-clean : clean
+	rm -f Makefile
+
