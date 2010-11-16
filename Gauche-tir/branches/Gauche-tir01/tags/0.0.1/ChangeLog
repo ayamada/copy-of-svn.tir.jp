@@ -1,0 +1,27 @@
+2005-01-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir : 0.0.1 release
+
+
+2005-01-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir/misc.scm : added
+	  - cgi-metavariables->html
+
+
+2005-01-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir : 0.0.0 release
+
+
+2005-01-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir/misc.scm : added
+
+
+2005-01-26  yamada <yamada-remove-this-part@tir.jp>
+
+	* tir : start
+
+
+$Id$

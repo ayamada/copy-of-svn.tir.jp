@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<!-- A test case that calls a simple XML-RPC service -->
+
+<Application>
+
+	<Window caption="XML-RPC Service Test" width="350" height="200"/>
+	<Resources>
+		<Script src="./test03.js"/>
+	</Resources>
+</Application>
+
+<!-- vim:set ts=8 sw=8 sts=8: -->

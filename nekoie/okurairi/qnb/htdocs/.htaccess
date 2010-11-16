@@ -1,0 +1,5 @@
+Options +ExecCGI
+<Files "qnb.cgi">
+SetHandler cgi-script
+</Files>
+#ErrorDocument 500 /qnb/500.asis

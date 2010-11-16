@@ -1,0 +1,34 @@
+# $Id$
+
+# どこでも共通な基本的な環境変数をココで設定する
+
+SHELL=zsh # bash経由で起動する場合に役立つ
+
+LANG=C # 邪魔な日本語メッセージを出さない
+
+# エディタ設定
+if vim --version > /dev/null 2>&1; then
+  EDITOR=vim
+elif vi --version > /dev/null 2>&1; then
+  EDITOR=vi
+elif elvis --version > /dev/null 2>&1; then
+  EDITOR=elvis
+else
+  EDITOR=ed
+fi
+VISUAL=$EDITOR
+
+# ページャ設定
+if lv -V > /dev/null 2>&1; then
+  PAGER=lv
+elif jless --version > /dev/null 2>&1; then
+  PAGER=jless
+else
+  PAGER=less
+fi
+JLESSCHARSET=japanese
+
+export SHELL LANG EDITOR VISUAL PAGER JLESSCHARSET
+
+
+# vim:set ft=zsh sw=2 ts=2 et:

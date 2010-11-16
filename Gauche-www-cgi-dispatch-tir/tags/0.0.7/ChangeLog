@@ -1,0 +1,99 @@
+2005-12-14  yamada <yamada-remove-this-part@tir.jp>
+
+	* Gauche-www-cgi-dispatch-tir : 0.0.7 release
+
+
+2005-12-14  yamada <yamada-remove-this-part@tir.jp>
+
+	* www.cgi.dispatch-tir :
+	  - cgi-entry->html:form cgi-entry->html:a が
+	    unbound variableで動いていなかったのを修正
+
+
+2005-11-16  yamada <yamada-remove-this-part@tir.jp>
+
+	* sample/sample.cgi : cgi-entry->form を cgi-entry->html:form に修正
+
+
+2005-11-16  yamada <yamada-remove-this-part@tir.jp>
+
+	* Gauche-www-cgi-dispatch-tir : 0.0.6 release
+
+
+2005-11-16  yamada <yamada-remove-this-part@tir.jp>
+
+	* www.cgi.dispatch-tir :
+	  - cgi-entry->form module&cgi-entry->form を、
+	    cgi-entry->html:form module&cgi-entry->html:form にリネーム
+	    (元の cgi-entry->form module&cgi-entry->form も、当分残す)
+	  - cgi-entry->html:a module&cgi-entry->html:a を新たに追加。
+	  - cgi-entry->html:form module&cgi-entry->html:form は、
+	    :base-url :params :internal-html :submit-label 以外の
+	    keywordsを、html:formの属性として追加する。
+	    (cgi-entry->html:a module&cgi-entry->html:a も、同じ仕様)
+
+
+2005-11-01  yamada <yamada-remove-this-part@tir.jp>
+
+	* Gauche-www-cgi-dispatch-tir : 0.0.5 release
+
+
+2005-11-01  yamada <yamada-remove-this-part@tir.jp>
+
+	* www.cgi.dispatch-tir :
+	  - module-nameのシンボルではなく、moduleそのものをキーとして、
+	    ディスパッチテーブルを管理する事にした
+	  - module&cgi-entry->url module&cgi-entry->form も、
+	    exportするようにした
+
+
+2005-10-31  yamada <yamada-remove-this-part@tir.jp>
+
+	* Gauche-www-cgi-dispatch-tir : 0.0.4 release
+
+
+2005-10-31  yamada <yamada-remove-this-part@tir.jp>
+
+	* www.cgi.dispatch-tir :
+	  - define-cgi-entry時に、templateがalistかどうかチェックし、
+	    alistでないならエラーを出すようにした
+
+
+2005-10-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* Gauche-www-cgi-dispatch-tir : 0.0.3 release
+
+
+2005-10-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* sample/sample.cgi :
+	  - (use srfi-2)が抜けてしまっていた
+
+
+2005-10-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* Gauche-www-cgi-dispatch-tir : 0.0.2 release
+
+
+2005-10-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* sample/sample.cgi :
+	  - サンプルスクリプトのgoshの起動パスを/usr/bin/env経由に変更
+
+
+2005-10-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* Gauche-www-cgi-dispatch-tir : 0.0.1 release
+
+
+2005-10-30  yamada <yamada-remove-this-part@tir.jp>
+
+	* Gauche-www-cgi-dispatch-tir : started
+	  - 開発リポジトリを、ktestから移動。
+	  - パッケージ用ファイルのテンプレートとして、
+	    pipehttpから各種ファイルをコピーし、少し整頓した。
+	  - gen-versionが、www/cgi/dispatch-tir/version.scm を
+	    生成するように修正。
+
+
+$Id$

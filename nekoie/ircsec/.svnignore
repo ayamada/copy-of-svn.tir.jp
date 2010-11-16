@@ -1,0 +1,7 @@
+ircsec.pid
+logs
+ircsec.pipe
+std.log
+api.xml
+settings.txt
+cookie.txt

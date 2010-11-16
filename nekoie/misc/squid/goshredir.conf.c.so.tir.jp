@@ -1,0 +1,7 @@
+;;; coding: euc-jp
+;;; -*- scheme -*-
+;;; vim:set ft=scheme ts=8 sts=2 sw=2 et:
+;;; $Id$
+("http://gs-alpha.tir.jp" "http://127.0.0.1:40000")
+("http://gs-beta.tir.jp"  "http://127.0.0.1:40001")
+("http://aml.tir.jp"      "http://127.0.0.1:40002")

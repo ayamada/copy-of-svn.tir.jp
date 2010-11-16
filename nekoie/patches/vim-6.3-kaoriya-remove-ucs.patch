@@ -1,0 +1,10 @@
+--- vimrc.orig	2005-01-13 17:33:53.000000000 +0900
++++ vimrc	2005-01-13 17:34:02.000000000 +0900
+@@ -81,7 +81,6 @@
+ " ファイルの漢字コード自動判別のために必要。(要iconv)
+ if has('iconv')
+   set fileencodings&
+-  set fileencodings+=ucs-2le,ucs-2
+   let s:enc_euc = 'euc-jp'
+   let s:enc_jis = 'iso-2022-jp'
+   " iconvがJISX0213に対応しているかをチェック

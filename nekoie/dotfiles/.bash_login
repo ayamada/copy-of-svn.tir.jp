@@ -1,0 +1,58 @@
+#!/bin/sh
+# $Id$
+
+# note : zsh前提。しかしzsh無くても動く事。
+
+# note : この.bash_loginからzshを起動する。
+#        zshが起動したら、.zshrcを使い、ログインシェルをzshに見せかける事。
+#        (要するに、この.bash_loginは何度も実行されて欲しくない)
+
+# note : この.bash_loginはrootには適用しない事（セキュリティ的に）。
+#        つまり、この.bash_loginは一般ユーザ用。
+#        rootは、「su - -c zsh」等として、直接zshを起動するようにする。
+#        なので、重要な設定はココには書かずに、.zshrcに記述するようにする事。
+
+# 結局、ココでも、caseを使ってサーバ毎に分岐させる事になりそう
+
+# この辺は、コマンドの有無で、PATHに追加するかを決めるように、
+# あとで上手い事修正する事。
+
+case ${HOSTNAME} in
+  sv.tir.ne.jp)
+    PATH=/usr/local/perl/bin:/usr/local/python/bin:$PATH:$HOME/.bin
+    ;;
+  *.so.tir.jp)
+    PATH=$PATH:$HOME/bin
+    ;;
+  mana)
+    PATH=/usr/local/ymir/subversion/bin:/usr/local/gauche/bin:/usr/local/ymir/perl/bin:$HOME/bin:/usr/local/bin:/usr/bin:/bin
+    ;;
+esac
+
+export PATH
+
+case ${TERM} in
+  *term*)
+    printf "\033]0;${USER}@${HOSTNAME}\007" # kterm title change
+    ;;
+  screen)
+    printf "\033k${USER}@${HOSTNAME}\033\\" # child screen label change
+    #printf "\033P\033]0;${USER}@${HOSTNAME}\007\033\\" # kterm title change
+    ;;
+esac
+
+# check for ssh-agent and zsh
+if zsh --version >/dev/null 2>&1; then
+  #if [ ! ${SSH_AUTH_SOCK} ]; then
+  #  exec ssh-agent zsh
+  #else
+  #  exec zsh
+  #fi
+  exec zsh
+fi
+# if have not zsh, continued bash ...
+
+# display screen session
+s -ls 2> /dev/null
+
+# vim:set ft=sh sw=2 ts=2 et:

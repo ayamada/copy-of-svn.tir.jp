@@ -1,0 +1,62 @@
+# $Id$
+GOSH = @GOSH@
+GAUCHE_CONFIG = @GAUCHE_CONFIG@
+INSTALL_TYPE = @INSTALL_TYPE@
+INSTALL = @INSTALL@
+
+TARGET_DIR = lib
+TARGET = tcpcgi.scm \
+         tcpcgi-server.scm \
+         tcpcgi/state.scm \
+         tcpcgi/common.scm \
+         tcpcgi/request.scm \
+         tcpcgi/metavariables.scm \
+         tcpcgi/dispatch.scm \
+         tcpcgi/execute.scm \
+         tcpcgi/execute/filer.scm \
+         tcpcgi/parsed-header.scm \
+         tcpcgi/errordoc.scm \
+         tcpcgi/supplement.scm \
+         tcpcgi/version.scm
+
+
+GENERATED = 
+
+SCM_INSTALL_DIR = $(DESTDIR)`$(GAUCHE_CONFIG) --$(INSTALL_TYPE)libdir`
+
+.PHONY: all clean test check install uninstall distclean maintainer-clean
+
+
+all:
+
+clean:
+	rm -f core *~ lib/*~ lib/*.orig \
+        lib/tcpcgi/*~ lib/tcpcgi/*.orig \
+        lib/tcpcgi/execute/*~ lib/tcpcgi/execute/*.orig \
+        $(GENERATED)
+
+test:
+
+check:
+
+install: all
+	if test ! -d $(SCM_INSTALL_DIR)/tcpcgi; then \
+	  $(INSTALL) -d $(SCM_INSTALL_DIR)/tcpcgi; \
+	fi
+	for f in $(TARGET); do \
+	  $(INSTALL) -m 444 $(TARGET_DIR)/$$f $(SCM_INSTALL_DIR)/$$f; \
+	done
+
+uninstall:
+	for f in $(TARGET); do \
+	  rm -f $(SCM_INSTALL_DIR)/$$f; \
+	done
+	rmdir $(SCM_INSTALL_DIR)/tcpcgi
+
+distclean: clean
+	rm -f Makefile
+
+maintainer-clean: clean
+	rm -f Makefile
+
+

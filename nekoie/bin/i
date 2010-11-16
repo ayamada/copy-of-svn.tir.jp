@@ -1,0 +1,4 @@
+#!/bin/sh
+# $Id$
+exec info --vi-keys "$@"
+# vim:set ft=sh sw=2 ts=2 et:

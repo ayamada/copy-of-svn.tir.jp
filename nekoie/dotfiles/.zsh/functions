@@ -1,0 +1,187 @@
+# $Id$
+
+# 前提 : ログインシェルはbashとし、.bash_loginの中でexec zshされる。
+# 前提 : .zshrcの中でSHELL=zshし、子プロセスはbashを起動しないようにする。
+
+# 前提 : screenは自動起動しない（例外:k）。
+#        しかし、コレ、やっぱり、やめそう。
+
+# 前提 : rootは、.bash_loginは無し（安全の為）。zshも手動起動させる。
+
+
+
+function history-all { history -E 1 } # 全履歴の一覧を出力する
+
+# 色のエスケープシーケンス定義
+COLOR_BLACK=$'%{\033[0;30m%}'
+COLOR_RED=$'%{\033[0;31m%}'
+COLOR_GREEN=$'%{\033[0;32m%}'
+COLOR_BROWN=$'%{\033[0;33m%}'
+COLOR_BLUE=$'%{\033[0;34m%}'
+COLOR_PURPLE=$'%{\033[0;35m%}'
+COLOR_CYAN=$'%{\033[0;36m%}'
+COLOR_LIGHTGRAY=$'%{\033[0;37m%}'
+COLOR_DARKGRAY=$'%{\033[1;30m%}'
+COLOR_LIGHTRED=$'%{\033[1;31m%}'
+COLOR_LIGHTGREEN=$'%{\033[1;32m%}'
+COLOR_YELLOW=$'%{\033[1;33m%}'
+COLOR_LIGHTBLUE=$'%{\033[1;34m%}'
+COLOR_LIGHTPURPLE=$'%{\033[1;35m%}'
+COLOR_LIGHTCYAN=$'%{\033[1;36m%}'
+COLOR_WHITE=$'%{\033[1;37m%}'
+COLOR_DEFAULT=$'%{\033[1;m%}'
+
+
+# バッテリ残量出力関数
+# 仕様 : 以下のような書式を出力する
+#          005%+ （バッテリ005%かつコンセント有り）
+#          095%- （バッテリ095%かつコンセント無し）
+#          100%= （バッテリ100%かつコンセント有り）
+#          ----- （バッテリ無しか、apm/acpi両方無し）
+
+# /proc/apmの実体
+# 1.16 1.2 0x03 cons ???? ???? per -1 ?
+# コンセント使用時の/proc/apm
+# 1.16 1.2 0x03 0x01 0x00 0x01 65% -1 ?
+# バッテリ使用時の/proc/apm
+# 1.16 1.2 0x03 0x00 0x00 0x01 64% -1 ?
+# 充電中の/proc/apm
+# 1.16 1.2 0x03 0x01 0x03 0x09 3% -1 ?
+# バッテリ無しの/proc/apm
+# あとで調べる…‥
+
+# ファイルの有無によって、関数の定義を変更する
+if [ -r /proc/apm ]; then
+  # apm
+  bm_disp() {
+    # あとで…‥
+    printf "-----"
+  }
+elif [ -e /proc/acpi ]; then
+  # acpi
+  bm_disp() {
+    # あとで…‥
+    printf "-----"
+  }
+else
+  # バッテリ無し
+  bm_disp() {
+    printf "-----"
+  }
+fi
+
+# プロンプト変数のうち、固定のものを求めておく＆初期値設定
+P_WHERE_PREFIX="["
+P_WHERE="$USER@$HOST"
+P_WHERE_SUFFIX="]-"
+P_TIME_PREFIX="-<"
+P_TIME="hh:mm:ss"
+P_TIME_SUFFIX=">-"
+P_PWD_PREFIX="-["
+P_PWD="${PWD}"
+P_PWD_SUFFIX="]"
+
+recalc_prompt() {
+  local p_where="${P_WHERE_PREFIX}${P_WHERE}${P_WHERE_SUFFIX}"
+  local p_time="${P_TIME_PREFIX}${P_TIME}${P_TIME_SUFFIX}"
+  local p_pwd="${P_PWD_PREFIX}${P_PWD}${P_PWD_SUFFIX}"
+  local p_total="${p_where}${p_time}${p_pwd}"
+  local fillsize=$(( ${COLUMNS} - ${#p_total} )) # プロンプト幅を計算
+  if [ $fillsize -ge 0 ]; then
+    P_FILL=${(l.${fillsize}..-.)}
+  else
+    P_FILL=""
+    offset=$(( (${fillsize}*(-1)) + 4 ))
+    P_PWD="..."${P_PWD[${offset},-1]}
+  fi
+  OLD_COLUMNS=${COLUMNS} # 現在のプロンプト幅を記憶
+}
+
+precmd() {
+  # 子screenのラベルを元に戻す
+  # 可能なら、プロンプトに収めたいが…‥
+  printf "${X_LABEL_NORMAL}"
+
+  # ココで、プロンプト幅に変化があるなら、毎回プロンプト幅の再計算を行う
+  if [ ! "${OLD_COLUMNS}" = "${COLUMNS}" ]; then
+    recalc_prompt
+  fi
+}
+
+preexec() {
+  # 子screenのラベルを一時的に変更
+  case ${TERM} in
+   screen*)
+    # ココ、エスケープが不完全…‥どうにかしたいが…‥
+    local cmds="$2"
+    case ${cmds} in
+      exec\ *)
+        # execの時は変更しない
+        ;;
+      *\`*)
+        # `
+        # バッククォートを含む時は変更しない
+        ;;
+      *\%*)
+        # %を含む時は変更しない
+        ;;
+      *)
+        # コレ、日本語を含む実行コマンドだと、あまりよろしくない…‥
+        # どうしたものか…‥
+        printf "\033k$cmds\033\\" # child screen label change
+      ;;
+    esac
+    ;;
+  esac
+}
+
+# ココ、あとで関数化する事。
+# プロンプト二行目
+#[%~]\
+#"\${P_UPPER}"\
+prompt_gorgeous() {
+  chpwd() {
+    # カレントディレクトリ変更
+    P_PWD="${PWD}"
+    # プロンプト再生成
+    recalc_prompt
+  }
+
+  PROMPT='${COLOR_PROMPT}'\
+"\${P_WHERE_PREFIX}"\
+'${COLOR_DEFAULT}'\
+"\${P_WHERE}"\
+'${COLOR_PROMPT}'\
+"\${P_WHERE_SUFFIX}"\
+"\${P_TIME_PREFIX}"\
+'${COLOR_DEFAULT}'\
+"%D{%H:%M:%S}"\
+'${COLOR_PROMPT}'\
+"\${P_TIME_SUFFIX}"\
+"\${P_FILL}"\
+"\${P_PWD_PREFIX}"\
+'${COLOR_DEFAULT}'\
+"\${P_PWD}"\
+'${COLOR_PROMPT}'\
+"\${P_PWD_SUFFIX}"\
+$'\r\n'\
+'['\
+'${COLOR_DEFAULT}'\
+'%h'\
+'${COLOR_PROMPT}'\
+']'\
+'${COLOR_DEFAULT}'\
+' %(!.#.$) '
+
+  chpwd
+}
+prompt_simple() {
+  unfunction chpwd # 使わない…‥と思ったが、端末の横サイズよりも$PWDが
+  # 大きくなった時の事を考えて、長くなったらサプレスしたい。しかし、また今度。
+  PROMPT='${COLOR_PROMPT}[$PWD]'$'\n''$USER@$HOST$COLOR_DEFAULT%(!.#.$) '
+  # 考えた結果、右プロンプトは使わない事にした
+  #RPROMPT='${COLOR_PROMPT}'[%~]'$COLOR_DEFAULT'
+}
+
+
+# vim:set ft=zsh sw=2 ts=2 et:

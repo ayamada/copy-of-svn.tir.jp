@@ -1,0 +1,13 @@
+<html>
+<head>
+<meta name="ROBOTS" content="NOINDEX,NOFOLLOW" />
+<title>503 Service Temporarily Unavailable</title>
+</head>
+<body>
+<h1>Service Temporarily Unavailable</h1>
+<p>The server is temporarily unable to service your request due to
+maintenance downtime or capacity problems. Please try again later.</p>
+<hr />
+<address>%s</address>
+</body>
+</html>

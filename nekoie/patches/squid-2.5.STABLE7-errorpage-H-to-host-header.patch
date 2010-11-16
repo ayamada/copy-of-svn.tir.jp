@@ -1,0 +1,19 @@
+--- src/errorpage.c.orig	2005-01-26 04:43:10.000000000 +0900
++++ src/errorpage.c	2005-01-26 05:45:01.000000000 +0900
+@@ -486,7 +486,15 @@
+ 	memBufPrintf(&mb, "%s", getMyHostname());
+ 	break;
+     case 'H':
+-	p = r ? r->host : "[unknown host]";
++	if (httpHeaderHas(&r->header, HDR_HOST)) {
++	    String host;
++	    host = httpHeaderGetStrOrList(&r->header, HDR_HOST);
++	    memBufPrintf(&mb, "%s", strBuf(host));
++	    stringClean(&host);
++	}
++	else {
++	    p = r ? r->host : "[unknown host]";
++	}
+ 	break;
+     case 'i':
+ 	memBufPrintf(&mb, "%s", inet_ntoa(err->src_addr));

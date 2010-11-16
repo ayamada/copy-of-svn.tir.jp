@@ -1,0 +1,394 @@
+;;; coding: euc-jp
+;;; -*- scheme -*-
+;;; vim:set ft=scheme ts=8 sts=2 sw=2 et:
+;;; $Id$
+
+
+
+;;;; TODO: ※リロードする前にircsec.scmのrecv-thunkを取ってきて、再定義する事！
+;;;;         (これをやらないと、エラー処理が怪しくなる為)
+;;;;         しかし、この処理は、このplugin.dumpの中ではなく、
+;;;;         ircsec.scmの(reload!)内で行うべき。
+
+
+;;;; TODO: guardがほぼ標準になってるので、マクロ化した方がいい
+
+(use gauche.parameter)
+(use gauche.process)
+(use util.queue)
+(use file.util)
+;(use rfc.http)
+(use sxml.ssax)
+(use sxml.sxpath)
+(use util.list)
+(use text.tree)
+(use rfc.uri)
+(use gauche.charconv)
+
+(define p:event (make-parameter #f))
+(define p:reply-to (make-parameter #f))
+
+(debug-print-width #f)
+
+#|
+以下は、未完成のまま放置なので、一旦コメントアウト
+
+
+;;; TODO: 継続ベースにする
+;;; - 継続保存スタックorキューを用意する
+;;; -- 継続が一定数以上たまったら、古いものから削除していく
+;;; - 「(cont 'digest)」と発言する事で継続を続行できるようにする
+;;; -- digestのところは、衝突しなさそうな、適当なdigest値を指定
+;;; - とりあえず、継続ベースにしたい機能は以下の通り
+;;; -- hg通知の「続き」
+;;; -- ログ検索の「続き」
+;;; - 面倒なので、とりあえずhg通知は放置で、ログ検索だけ、継続ベースにする
+
+(define *cont-limit* 20)
+(define *cont-queue* (make-queue))
+
+;; 返り値として、シンボルを返す
+(define (cont-push! cont)
+  ...)
+
+(define *get-irc-cont-expr-string-re*
+  (string->regexp
+    (string-append
+      "^"
+      (regexp-quote "(cont '")
+      "(.*)"
+      (regexp-quote ")")
+      "$")))
+(define (get-irc-cont-expr-string msg)
+  (and-let* ((m (*get-irc-cont-expr-string-re* msg)))
+    (m 1)))
+
+(define (irc-cont symbol)
+  ...)
+
+
+;;; ----
+
+;;; ログ検索(irc-fgrep)
+;;; - 該当の発言から、特定の文字列または正規表現を取り出す
+;;; - 指定された文字列または正規表現から、
+;;;   ログファイル全体または指定期間に該当するログファイルの
+;;;   該当チャンネルのPRIVMSGから、fgrep相当の動作を行う
+;;; - irc.cgiのチケットを発行し、irc.cgiのurlを出す(将来実装予定)
+;;; - irc-fgrepの結果は、ログファイル単位で件数がカウントされ、
+;;;   出現回数の多い順にソートされ、上位10件ぐらいをNOTICEで表示する(仮)
+;;; とりあえず、仮に、以下のインターフェースとする
+;;; (irc-fgrep 文字列or正規表現 opt-開始期間 opt-終了期間)
+;;; 期間を指定する方法は、"2009/01/02"のような文字列指定とする
+;;; 指定しない場合は#fを指定する
+;;; 一応、検索文字列及び期間指定は、文字列ではなくシンボルでもokとする
+
+(define *irc-fgrep-limit* 5)
+
+(define *get-irc-fgrep-expr-string-re*
+  (string->regexp
+    (string-append
+      "^"
+      (regexp-quote "(irc-fgrep")
+      "\\s+"
+      "(.*)"
+      (regexp-quote ")")
+      "$")))
+(define (get-irc-fgrep-expr-string msg)
+  (and-let* ((m (*get-irc-fgrep-expr-string-re* msg)))
+    (m 1)))
+
+(define (dateint->datestr dateint)
+  ;; TODO: あとで
+  ...)
+(define (datestr->dateint datestr)
+  (cond
+    ((not datestr) #f)
+    ((eof-object? datestr) #f)
+    ((string? datestr)
+     (or
+       (and-let* ((m (#/^(\d\d\d\d)(?:\-|\/)(\d\d?)(?:\-|\/)(\d\d?)/ datestr)))
+         (+ (* (string->number (m 1)) 10000)
+            (* (string->number (m 2)) 100)
+            (* (string->number (m 3)) 1)))
+       (error "invalid date" datestr)))
+    (else
+      (error "invalid date" datestr))))
+
+(define (irc-fgrep str)
+  ;; 最初に、戻りの継続を用意しておく
+  ;; NB: ここでは、継続から復帰した場合にパラメータが変化してしまう為、
+  ;;     継続から復帰する部分がある場合は、p:eventを参照する部分は
+  ;;     それ以前だけにしなくてはならない
+  ;;     (p:reply-toについては、呼び出しの仕様上、変化しない筈)
+  (let/cc return
+    (guard (e (else
+                (irc-send! `(NOTICE ,(p:reply-to) ,(write-to-string e)))))
+      ;; まずstrからパラメータを切り出す
+      (define (get-re+headdate+taildate)
+        (with-input-from-string
+          str
+          (lambda ()
+            (let* ((re-src (read))
+                   (headdate-src (read))
+                   (taildate-src (read))
+                   ;; TODO: ↓ここをいじれば、fgrep以外も可能
+                   (re (cond
+                         ((regexp? re-src) re)
+                         ((equal? "" re-src) (error "empty string found"))
+                         ((string? re-src) (string->regexp
+                                             (regexp-quote re-src)))
+                         (else
+                           (error "invalid parameter" re-src))))
+                   ;; 内部では数値比較する方が楽なので、
+                   ;; "2009/01/02"を20090102のような数値に変換する
+                   (headdate (or (datestr->dateint headdate-src) 0)))
+                   (taildate (or (datestr->dateint taildate-src) 99999999)))
+                   )
+              (values re headdate taildate)))))
+
+      (receive (re headdate taildate) (get-re+headdate+taildate)
+        ;; ログファイル一覧を検索しつつ、結果を蓄える
+        (search-grep-result re headdate taildate return)))))
+
+(define (search-grep-result re headdate taildate return)
+  (define (cont-break)
+    ;; TODO: 仮の実装。ちゃんとしたのは、あとで実装する
+    (notice "(以下は省略されました)")
+    (return))
+  (define (done counter)
+    (notice #`"[以上、,|counter|個のログファイルがマッチしました]")
+    (return))
+  (define (grep-file? filename)
+    ;; TODO: あとで
+    ...)
+
+  (let* ((logdir (string-append *log-dir* "/" (p:reply-to)))
+         (files (directory-list logdir :children? #t)))
+    ;; ここからは、逐次的(手続き的)に処理していく
+    ;; (継続で続行する為)
+    (let next ((counter 0)
+               (rest-files files))
+      (if (null? rest-files)
+        (done counter)
+        (let1 num (guard (e (else -1))
+                    (or (datestr->dateint (car rest-files)) -1))
+          (if (not (<= headdate num taildate))
+            (next counter (cdr rest-files))
+            (if (grep-file? (car rest-files))
+              (begin
+                ;; TODO: url化
+                (notice #`"「,|re|」の検索結果: ,(car rest-files)")
+                ;; TODO: 一定件数以上なら、継続を作って中断する
+                (next (+ 1 counter) (cdr rest-files)))
+              (next counter (cdr rest-files)))))))))
+|#
+
+
+;;; ----
+
+
+
+;; (eval! '(+ 1 2)) のようなテキストを送ると、評価してくれる
+(define *get-irc-eval-expr-string-re*
+  (begin
+    (define *expr-prefix* "(eval! '")
+    (define *expr-suffix* ")")
+    (string->regexp
+      (string-append
+        "^"
+        (regexp-quote *expr-prefix*)
+        "(.*)"
+        (regexp-quote *expr-suffix*)
+        "$"))))
+;; get-irc-eval-expr-stringは、ircの他人の発言の文字列を引数に取り、
+;; そこから評価すべき文字列だけを取り出すか、#fを返すかする手続き
+(define (get-irc-eval-expr-string msg)
+  (and-let* ((match (*get-irc-eval-expr-string-re* msg)))
+    (match 1)))
+
+(define (irc-eval! sexpr-str)
+  (guard (e (else (notice (write-to-string e))))
+    (unless (equal? "#YmirG" (p:reply-to))
+      (error "denied"))
+    ;; read
+    (let1 sexpr (read-from-string sexpr-str)
+      ;; eval
+      (receive results (eval sexpr (current-module))
+        ;; print
+        (for-each
+          (lambda (x)
+            (notice (write-to-string x)))
+          results)))))
+
+
+
+(define *get-irc-perltrap-help-string-re* #/perlの?罠/i)
+(define (get-irc-perltrap-help-string msg)
+  (and-let* ((match (*get-irc-perltrap-help-string-re* msg)))
+    msg))
+
+(define *get-irc-perltrap-entry-string-re* #/^perl罠追加\:\s*(.*)$/i)
+(define (get-irc-perltrap-entry-string msg)
+  (and-let* ((match (*get-irc-perltrap-entry-string-re* msg)))
+    (match 1)))
+
+(define *get-irc-perltrap-fund-string-re* #/^perl罠貯金\:\s*(.*)$/i)
+(define (get-irc-perltrap-fund-string msg)
+  (and-let* ((match (*get-irc-perltrap-fund-string-re* msg)))
+    msg))
+
+(define *last-help-epoch* 0)
+(define *last-help-interval* (* 24 60 60))
+(define (irc-perltrap-help line)
+  (guard (e (else (notice (write-to-string e))))
+    (let1 epoch (sys-time)
+      (when (< (+ *last-help-epoch* *last-help-interval*) epoch)
+        (set! *last-help-epoch* epoch)
+        (notice #`"「perl罠追加: 〜〜〜」もしくは「perl罠貯金: n分」と発言する事で、 https://update.forcast.jp/fcdiv/mwiki/%E8%B3%87%E6%96%99/perl%E7%BD%A0 に自動追加可能です")))))
+
+
+
+
+
+;; rfc.httpはhttpsに対応していないので、API通信にはwgetを使う
+(define (make-post-data params)
+  (define (enc str)
+    (uri-encode-string
+      (ces-convert str (gauche-character-encoding) 'utf-8)))
+
+  (tree->string
+    (intersperse
+      "&"
+      (apply
+        append
+        (map
+          (lambda (key+vals)
+            (let1 enc-key (enc (car key+vals))
+              (map
+                (lambda (val)
+                  (list
+                    enc-key
+                    "="
+                    (enc val)))
+                (cdr key+vals))))
+          params)))))
+(define (fetch-sxml params)
+  (sys-unlink "post.txt")
+  (call-with-output-file
+    "post.txt"
+    (lambda (out)
+      (display (make-post-data params) out)))
+  (sys-unlink "api.xml")
+  (sys-system
+    #`"wget -q --no-check-certificate --load-cookies=cookie.txt --save-cookies=cookie.txt --keep-session-cookies --post-file=post.txt -O api.xml ',(setting-of :api-url)' 2>> wget.stderr")
+  (call-with-input-file
+    "api.xml"
+    (lambda (xml-port)
+      (ssax:xml->sxml xml-port '()))
+    :encoding 'utf-8)
+  )
+
+(define (perltrap-send msg)
+  (define (sxml->param sxml . keys)
+    ;; NB: めんどいので効率無視で書く
+    ((sxpath `(api . ,keys)) sxml))
+
+  ;; TODO: cadarとかで取るのは微妙だが、xpath的にどう取るのが普通なのか
+  ;;       よく知らないので、とりあえずこのままにする
+
+  ;; ログイントークン取得(see http://www.mediawiki.org/wiki/API:Login/ja )
+  (let* ((login-token-sxml (fetch-sxml `(("action" "login")
+                                         ("lgname" ,(setting-of :api-lgname))
+                                         ("lgpassword" ,(setting-of :api-lgpassword))
+                                         ("format" "xml")
+                                         )))
+         ;; NB: めんどいので、resultは確認しない事にする
+         (logined-params (map
+                           (lambda (key)
+                             (list
+                               key
+                               (cadar (sxml->param login-token-sxml 'login '@ key))))
+                           '("lgtoken" "lgusername" "lguserid")))
+         ;; 編集元情報取得(see http://www.mediawiki.org/wiki/API:Query/ja )
+         (query-sxml (fetch-sxml `(("action" "query")
+                                   ("prop" "info|revisions")
+                                   ("intoken" "edit")
+                                   ("titles" "資料/perl罠")
+                                   ("rvprop" "content|timestamp")
+                                   ("format" "xml")
+                                   . ,logined-params)))
+         ;; 編集
+         (token (guard (e (else
+                            (error "edittokenの取得に失敗しました")))
+                  (cadar (sxml->param query-sxml 'query 'pages 'page '@ 'edittoken))))
+         (old-time (cadar (sxml->param query-sxml 'query 'pages 'page 'revisions 'rev '@ 'timestamp)))
+         (old-content (caddar (sxml->param query-sxml 'query 'pages 'page 'revisions 'rev)))
+         (new-content (string-append old-content "\n" "* " msg "\n"))
+         ;; 編集結果反映
+         ;; ( http://www.mediawiki.org/wiki/API:Edit_-_Create%26Edit_pages/ja )
+         (edit-sxml (fetch-sxml `(("action" "edit")
+                                  ("title" "資料/perl罠")
+                                  ;("section" "7")
+                                  ("text" ,new-content)
+                                  ("minor" "1")
+                                  ("bot" "1")
+                                  ("basetimestamp" ,old-time)
+                                  ("format" "xml")
+                                  ("token" ,token)
+                                  . ,logined-params)))
+         )
+    ;; 編集結果反映のみ、resultを確認する
+    (unless (equal? "Success" (cadar (sxml->param edit-sxml 'edit '@ 'result)))
+      (error "何らかの原因により、「資料/perl罠」エントリの更新に失敗しました"))
+    ;; TODO: あとで
+    ;(error "DEBUG: " old-content)
+    ;(warn (write-to-string query-sxml))
+    ;(warn (write-to-string edit-sxml))
+    ;(notice #`"DEBUG: login-token-sxml ,login-token-sxml")
+    ;(notice #`"DEBUG: logined-params ,logined-params")
+    ;(notice #`"DEBUG: edittoken ,token")
+    ;(notice #`"DEBUG: query-sxml ,query-sxml")
+    #t))
+
+(define (irc-perltrap-entry msg)
+  (guard (e (else (notice
+                    ;(write-to-string e)
+                    (ref e 'message)
+                    )))
+    (perltrap-send msg)
+    (notice #`"資料/perl罠 へのエントリ入力を受け付けました")))
+
+(define (irc-perltrap-fund msg)
+  (guard (e (else (notice (write-to-string e))))
+    (notice #`"perl罠貯金はまだ未実装です")))
+
+;;; ----
+
+(define (privmsg str)
+  (irc-send! `(PRIVMSG ,(p:reply-to) ,str)))
+(define (notice str)
+  (irc-send! `(NOTICE ,(p:reply-to) ,str)))
+
+(define (resolve-event-plugin event)
+  ;; 今のところ、特定メッセージに、固定で応答する
+  ;; TODO: 将来はテーブル化する事
+  (when (eq? 'PRIVMSG (event->command event))
+    (let ((reply-to (event->reply-to event))
+          (msg (cadr (event->params event)))
+          )
+      (parameterize ((p:event event)
+                     (p:reply-to reply-to))
+        (cond
+          ((get-irc-eval-expr-string msg) => irc-eval!)
+          ((get-irc-perltrap-fund-string msg) => irc-perltrap-fund)
+          ((get-irc-perltrap-entry-string msg) => irc-perltrap-entry)
+          ((get-irc-perltrap-help-string msg) => irc-perltrap-help)
+          ;((get-irc-fgrep-expr-string msg) => irc-fgrep)
+          ;((get-irc-cont-expr-string msg) => irc-cont)
+          (else
+            #f))))))
+
+
+
+

@@ -1,0 +1,55 @@
+#!/usr/local/gauche/bin/gosh
+;;; coding: euc-jp
+;;; -*- scheme -*-
+;;; vim:set ft=scheme ts=8 sts=2 sw=2 et:
+;;; $Id$
+
+;;; このスクリプトには、各種設定とkickstartコードのみを書く事
+;;; ToDo: SERVER_NAMEとSERVER_PORTを、CGIに渡す前にだけ書き換える
+;;;       apacheモジュールを探す。無いなら自分で作る事。
+
+(add-load-path "/home/nekoie/nekoie/site/aml.tir.jp/lib")
+(use gauche.parameter)
+(use srfi-1)
+(use www.cgi)
+(use www.fastcgi)
+(use tir03.cgi)
+(use tcms01)
+
+;;; ----
+
+(define (main args)
+  (with-fastcgi
+    (lambda ()
+      (with-reverse-proxy
+        "aml.tir.jp"
+        80
+        (lambda ()
+          ;; ToDo: あとでちゃんと作る
+          (cgi-main/jp/path
+            (lambda (params path-info-list)
+              (use text.html-lite)
+              (list
+                (cgi-header :content-type "text/html; charset=EUC-JP")
+                (html:html
+                  (html:head
+                    (html:link
+                      :rel "Stylesheet"
+                      :type "text/css"
+                      :href "http://css.tir.jp/tir.css"))
+                  (html:body
+                    (html:h1 "amlについて")
+                    (html:p
+                      ;"抽象化が鍵となるオンラインゲームです。"
+                      ;"メタなものが嫌いな人には向いていません。"
+                      "現在準備中。")
+                    (html:ul
+                      (html:li
+                        (html:a
+                          :href "/"
+                          "戻る")))))))
+            ;:on-error cgi-on-error/stack-trace
+            )
+          ))))
+  0)
+

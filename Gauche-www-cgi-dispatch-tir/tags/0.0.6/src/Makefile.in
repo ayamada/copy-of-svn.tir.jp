@@ -1,0 +1,53 @@
+# $Id$
+GOSH = @GOSH@
+GAUCHE_CONFIG = @GAUCHE_CONFIG@
+INSTALL_TYPE = @INSTALL_TYPE@
+INSTALL = @INSTALL@
+
+NAME = www/cgi/dispatch-tir
+
+TARGET_DIR = lib
+TARGET = $(NAME).scm \
+         $(NAME)/alist-table.scm \
+         $(NAME)/version.scm
+
+
+GENERATED = 
+
+SCM_INSTALL_DIR = $(DESTDIR)`$(GAUCHE_CONFIG) --$(INSTALL_TYPE)libdir`
+
+.PHONY: all clean test check install uninstall distclean maintainer-clean
+
+
+all:
+
+clean:
+	rm -f core *~ lib/*~ lib/*.orig \
+        lib/$(NAME)/*~ lib/$(NAME)/*.orig \
+        $(GENERATED)
+
+test:
+
+check:
+
+install: all
+	if test ! -d $(SCM_INSTALL_DIR)/$(NAME); then \
+	  $(INSTALL) -d $(SCM_INSTALL_DIR)/$(NAME); \
+	fi
+	for f in $(TARGET); do \
+	  $(INSTALL) -m 444 $(TARGET_DIR)/$$f $(SCM_INSTALL_DIR)/$$f; \
+	done
+
+uninstall:
+	for f in $(TARGET); do \
+	  rm -f $(SCM_INSTALL_DIR)/$$f; \
+	done
+	rmdir $(SCM_INSTALL_DIR)/$(NAME)
+
+distclean: clean
+	rm -f Makefile
+
+maintainer-clean: clean
+	rm -f Makefile
+
+

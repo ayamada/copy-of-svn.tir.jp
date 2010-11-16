@@ -1,0 +1,26 @@
+;;; coding: euc-jp
+;;; -*- scheme -*-
+;;; vim:set ft=scheme ts=8 sts=2 sw=2 et:
+;;; $Id$
+
+(define *module-name* "www.cgi.dispatch-tir")
+(define *version-module-symbol*
+  (string->symbol
+    (string-append *module-name* ".version")))
+(define *version-module-path*
+  (module-name->path *version-module-symbol*))
+(define *version-function-symbol*
+  (string->symbol
+    (string-append *module-name* "-version")))
+
+(define (main args)
+  (let* ((vfile  (cadr args))
+         (verstr (call-with-input-file vfile read-line)))
+    (write `(define-module ,*version-module-symbol*
+              (export ,*version-function-symbol*)
+              (define (,*version-function-symbol*) ,verstr)
+              (provide ,*version-module-path*)))
+    (newline)
+    (flush))
+  0)
+

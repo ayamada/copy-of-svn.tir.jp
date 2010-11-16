@@ -1,0 +1,16 @@
+--- lib/www/cgi.scm.orig	2005-01-26 02:09:37.000000000 +0900
++++ lib/www/cgi.scm	2005-01-26 02:15:13.000000000 +0900
+@@ -389,8 +389,10 @@
+                  (html:p (html-escape-string (slot-ref e 'message)))))))
+ 
+ (define (cgi-default-output tree)
+-  (write-tree tree (wrap-with-output-conversion
+-                    (current-output-port)
+-                    (cgi-output-character-encoding))))
++  (with-output-conversion
++    (current-output-port)
++    (lambda ()
++      (write-tree tree))
++    :encoding (cgi-output-character-encoding)))
+ 
+ (provide "www/cgi")

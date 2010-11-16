@@ -1,0 +1,5 @@
+set input-meta on
+set output-meta on
+$if Gauche
+  set blink-matching-paren on
+$endif
