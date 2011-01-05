@@ -68,7 +68,9 @@
           (unless (#/^\|/ target)
             (printer target)))
         (sort (hash-table-get result-table type '())))
-      (newline))
+      ;(newline) ; overridden from parser.peg
+      (print "\n")
+      )
 
     (let loop ((line (read-line)))
       (if (eof-object? line)

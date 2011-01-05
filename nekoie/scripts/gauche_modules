@@ -3,6 +3,9 @@ binary.pack
 compat.jfilter
 compat.norational
 compat.stk
+control.job
+control.thread-pool
+crypt.bcrypt
 dbd.null
 dbi
 dbm
@@ -52,15 +55,16 @@ gauche.package.fetch
 gauche.package.util
 gauche.parameter
 gauche.parseopt
+gauche.partcont
 gauche.portutil
 gauche.procedure
 gauche.process
+gauche.record
 gauche.regexp
 gauche.reload
 gauche.selector
 gauche.sequence
 gauche.serializer
-gauche.serializer.aserializer
 gauche.sortutil
 gauche.stringutil
 gauche.syslog
@@ -78,6 +82,8 @@ gauche.vm.profiler
 gauche.vport
 math.const
 math.mt-random
+os.windows
+parser.peg
 rfc.822
 rfc.base64
 rfc.cookie
@@ -86,6 +92,7 @@ rfc.hmac
 rfc.http
 rfc.icmp
 rfc.ip
+rfc.json
 rfc.md5
 rfc.mime
 rfc.quoted-printable
@@ -113,6 +120,7 @@ srfi-5
 srfi-55
 srfi-7
 srfi-9
+srfi-98
 sxml.adaptor
 sxml.serializer
 sxml.ssax
