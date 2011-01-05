@@ -1,0 +1,9 @@
+[user]
+	name = atsuo yamada
+	email = yamada-git@tir.jp
+[help]
+	autocorrect = 1
+[color]
+	ui = true
+[core]
+	autocrlf = false
