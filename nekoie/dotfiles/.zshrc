@@ -1,4 +1,4 @@
-# $Id$
+# $Id: .zshrc 141 2006-02-27 05:29:51Z nekoie $
 
 # 前提 : ログインシェルはbashとし、.bash_loginの中でexec zshされる。
 # 前提 : .zshrcの中でSHELL=zshし、子プロセスはbashを起動しないようにする。

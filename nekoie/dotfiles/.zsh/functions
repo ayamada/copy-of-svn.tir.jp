@@ -1,4 +1,4 @@
-# $Id$
+# $Id: functions 3 2005-01-15 07:06:56Z nekoie $
 
 # 前提 : ログインシェルはbashとし、.bash_loginの中でexec zshされる。
 # 前提 : .zshrcの中でSHELL=zshし、子プロセスはbashを起動しないようにする。
@@ -80,12 +80,54 @@ P_TIME_SUFFIX=">-"
 P_PWD_PREFIX="-["
 P_PWD="${PWD}"
 P_PWD_SUFFIX="]"
+P_BRANCH_PREFIX="("
+P_BRANCH_SUFFIX=")"
 
+function print_directory_info() {
+    local absdir=$1
+
+    if [[ -d $absdir/.git ]] then
+        # Git
+        if [[ -e $absdir/.git/unpushed ]] then
+            echo -n '*UNPUSHED* '
+        fi
+        git branch --no-color 2>/dev/null \
+            | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'
+
+    elif [[ -d $absdir/.hg ]] then
+        # Hg
+        if [[ -e $absdir/.hg/unpushed ]] then
+            echo -n '*UNPUSHED* '
+        fi
+        cat $absdir/.hg/branch
+
+    elif [[ -d $absdir/_darcs ]] then
+        # Darcs
+        basename $absdir
+
+    elif [[ -r $absdir/CVS/Repository ]] then
+        # CVS
+        cat $absdir/CVS/Repository \
+            | sed -e 's!\([^/]*\).*!\1!'
+
+    else
+        # Unknown.
+        if [[ $absdir = "/" ]] then
+            # This is the root directory so exit from the recursion.
+            echo
+        else
+            # Recurse to the parent dir.
+            print_directory_info $(dirname $absdir)
+        fi
+    fi
+}
 recalc_prompt() {
+  P_BRANCH=$(print_directory_info $(pwd))
+  local p_branch="${P_BRANCH_PREFIX}${P_BRANCH}${P_BRANCH_SUFFIX}"
   local p_where="${P_WHERE_PREFIX}${P_WHERE}${P_WHERE_SUFFIX}"
   local p_time="${P_TIME_PREFIX}${P_TIME}${P_TIME_SUFFIX}"
   local p_pwd="${P_PWD_PREFIX}${P_PWD}${P_PWD_SUFFIX}"
-  local p_total="${p_where}${p_time}${p_pwd}"
+  local p_total="${p_where}${p_time}${p_pwd}${p_branch}"
   local fillsize=$(( ${COLUMNS} - ${#p_total} )) # プロンプト幅を計算
   if [ $fillsize -ge 0 ]; then
     P_FILL=${(l.${fillsize}..-.)}
@@ -103,9 +145,11 @@ precmd() {
   printf "${X_LABEL_NORMAL}"
 
   # ココで、プロンプト幅に変化があるなら、毎回プロンプト幅の再計算を行う
-  if [ ! "${OLD_COLUMNS}" = "${COLUMNS}" ]; then
-    recalc_prompt
-  fi
+  #if [ ! "${OLD_COLUMNS}" = "${COLUMNS}" ]; then
+  #  recalc_prompt
+  #fi
+  # 毎回再計算する事にした
+  recalc_prompt
 }
 
 preexec() {
@@ -134,6 +178,7 @@ preexec() {
     ;;
   esac
 }
+
 
 # ココ、あとで関数化する事。
 # プロンプト二行目
@@ -164,7 +209,11 @@ prompt_gorgeous() {
 "\${P_PWD}"\
 '${COLOR_PROMPT}'\
 "\${P_PWD_SUFFIX}"\
-$'\r\n'\
+"\${P_BRANCH_PREFIX}"\
+'${COLOR_DEFAULT}'\
+"\${P_BRANCH}"\
+'${COLOR_PROMPT}'\
+"\${P_BRANCH_SUFFIX}"\
 '['\
 '${COLOR_DEFAULT}'\
 '%h'\
@@ -172,6 +221,12 @@ $'\r\n'\
 ']'\
 '${COLOR_DEFAULT}'\
 ' %(!.#.$) '
+  # ↑の「'['\」の行の前に「$'\r\n'\」という行を入れると、プロンプト一行目と
+  # プロンプト二行目の間に明示的に改行が入れられる。
+  # (これにより、端末をリサイズした時にも二段のプロンプトが維持される)
+  # ただし、zshをバージョンアップしたらncursesをいれかえたせいか、
+  # 時々、一つ前の行が消されてしまう事が多発するようになってしまったので、
+  # 一旦この明示的改行は削除する事にした。
 
   chpwd
 }

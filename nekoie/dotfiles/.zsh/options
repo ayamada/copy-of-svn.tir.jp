@@ -1,4 +1,4 @@
-# $Id$
+# $Id: options 3 2005-01-15 07:06:56Z nekoie $
 
 setopt auto_cd
 setopt auto_name_dirs
