@@ -25,11 +25,13 @@
           (unless (eof-object? line)
             (let1 symbol (read-from-string line)
               (when (guard (e (else
-                                (display-error e line)
+                                #?=(display-error e line)
                                 #f))
                       (global-variable-bound? (current-module) symbol))
                 (write symbol)
-                (newline))
+                ;(newline) ; this is overridden from (use parser.peg)
+                (print "\n")
+                )
               (loop (read-line)))))))
     (begin
       (with-error-handler
