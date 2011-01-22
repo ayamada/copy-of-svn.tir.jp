@@ -1,6 +1,8 @@
 #!/bin/sh
 # $Id$
-if [ $1 = "commit" ]; then
+if [ $# -lt 1 ]; then
+  git
+elif [ $1 = "commit" ]; then
   git "$@" && touch `git rev-parse --git-dir`/unpushed
 elif [ $1 = "push" ]; then
   git "$@" && rm -f `git rev-parse --git-dir`/unpushed
