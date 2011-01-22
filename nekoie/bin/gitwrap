@@ -1,0 +1,11 @@
+#!/bin/sh
+# $Id$
+exec rlwrap -b"'\"(){}[],#|\\" gosh "$@"
+if [ $1 = "commit" ]; then
+  git "$@" && touch `git rev-parse --git-dir`/unpushed
+elif [ $1 = "push" ]; then
+  git "$@" && rm -f `git rev-parse --git-dir`/unpushed
+else
+  git "$@"
+fi
+# vim:set ft=sh sw=2 ts=2 et:
