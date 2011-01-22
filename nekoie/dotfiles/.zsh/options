@@ -17,6 +17,7 @@ setopt auto_param_keys
 unsetopt no_beep # 音は出す
 unsetopt promptcr # 末尾に改行無しコマンド実行後のふるまい。どっちにするか迷う
 setopt prompt_subst # プロンプトにエスケープシーケンス使用
+setopt complete_aliases # 補完時にalias展開を行わない
 
 # 履歴関連のオプション
 setopt extended_history               # 履歴ファイルに時刻を記録
