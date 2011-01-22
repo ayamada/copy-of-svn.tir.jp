@@ -1,6 +1,5 @@
 #!/bin/sh
 # $Id$
-exec rlwrap -b"'\"(){}[],#|\\" gosh "$@"
 if [ $1 = "commit" ]; then
   git "$@" && touch `git rev-parse --git-dir`/unpushed
 elif [ $1 = "push" ]; then
