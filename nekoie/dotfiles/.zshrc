@@ -127,6 +127,8 @@ zstyle ':completion:*:messages' format '%d'
 zstyle ':completion:*:warnings' format 'No matches for: %d'
 zstyle ':completion:*' group-name ''
 
+# gitの未push検出ラッパー
+alias git=gitwrap
 
 # 以下は、エラーが出るかもしれないコマンド実行群
 # dircolors設定
