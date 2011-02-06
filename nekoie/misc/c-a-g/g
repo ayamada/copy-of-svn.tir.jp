@@ -2,8 +2,8 @@
 ;#!/usr/local/gauche/bin/speedygosh
 
 ;;; プロジェクト名の由来:
-;;; 古き良き google deskbar のショートカットキーがctrl + alt + G であり、
-;;; google deskbar なき後に mayu および yamy の設定ファイルに
+;;; 古き良き google deskbar のショートカットキーが ctrl + alt + G であり、
+;;; google deskbar なき後、 mayu および yamy の設定ファイルに
 ;;; このショートカットキーを定義する際の設定が「C-A-G」であった事に由来する。
 
 ;; TODO: 簡易履歴機能(というか、ストレージ機能)をつける？
