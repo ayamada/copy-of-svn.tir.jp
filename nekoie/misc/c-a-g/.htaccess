@@ -1,0 +1,6 @@
+Options +ExecCGI
+
+<Files "c-a-g.cgi">
+  SetHandler cgi-script
+  ErrorDocument 500 "http://www.google.com/search"
+</Files>
