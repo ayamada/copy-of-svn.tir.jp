@@ -1,17 +1,16 @@
 #!/usr/local/gauche/bin/gosh
 ;#!/usr/local/gauche/bin/speedygosh
 
-;;; 名前の由来:
+;;; プロジェクト名の由来:
 ;;; 古き良き google deskbar のショートカットキーがctrl + alt + G であり、
 ;;; google deskbar なき後に mayu および yamy の設定ファイルに
 ;;; このショートカットキーを定義する際の設定が「C-A-G」であった事に由来する。
 
-;; TODO: html部をローカル保存しても動くように、formのactionを絶対指定する
-;; TODO: 簡易履歴機能(というか、ストレージ機能)をつける
+;; TODO: 簡易履歴機能(というか、ストレージ機能)をつける？
 ;; TODO: 簡易eval機能をつける？
 ;; TODO: 最終的には、自己組織化可能にする？
 
-(define-module c-a-g_cgi
+(define-module c-a-g.cgi
   (use www.cgi)
   (use rfc.http)
   (use text.html-lite)
@@ -23,7 +22,7 @@
   (use util.list)
   (export
     ))
-(select-module c-a-g_cgi)
+(select-module c-a-g.cgi)
 
 (define-macro (hoge . args)
   '(...))
@@ -59,7 +58,7 @@
                   )
       (html:html
         (html:head
-          (html:title "g.cgi")
+          (html:title "C-A-G")
           ;(html:script :src "/chaton/prototype.js" :type "text/javascript")
           )
         (html:body :id "the-body"
@@ -77,7 +76,7 @@
 
 (define (the-form query)
   (html:form
-    ;:action (cgi-get-metavariable "REQUEST_URI")
+    :action (self-url)
     :method "get"
     :target "_self"
     :name "send"
@@ -308,7 +307,7 @@
 ;;;===================================================================
 
 (select-module user)
-(define main (with-module c-a-g_cgi main))
+(define main (with-module c-a-g.cgi main))
 
 ;; Local variables:
 ;; mode: scheme
