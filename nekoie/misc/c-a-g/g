@@ -46,7 +46,23 @@
   (let1 c (make-keyword (cgi-get-parameter "c" params :default ""))
     (case c
       ((:s) (emit-content-solve params))
+      ((:h) (emit-content-help params))
       (else (emit-content-form params)))))
+
+
+(define (emit-content-help params)
+  (list
+    (cgi-header :content-type "text/html; charset=utf-8"
+                :pragma "no-cache"
+                :cache-control "no-cache"
+                )
+    (html:html
+      (html:head
+        (html:title "C-A-G")
+        )
+      (html:body
+        ;; TODO: コマンド定義マクロに説明文を含めるようにし、そこから抽出
+        "atode"))))
 
 
 (define (emit-content-form params)
@@ -90,28 +106,56 @@
                   :id "post-submit" :value "解決")
       )
     (javascript "self.document.send.q.focus();")
-    ;; TODO: 説明等を追加してもよい
-    ))
+    (html:div
+      (html:a
+        :href (append-params-to-url (self-url) '(("c" "h")))
+        "説明"))))
+
+
+(define (queries->lines:vimirc-single queries)
+  ;; TODO: あとで
+  #f)
+(define (queries->lines:vimirc-multi queries)
+  ;; TODO: あとで
+  #f)
+(define (extract-url str)
+  ;; strにurlが複数含まれていても、一つだけしか取り出さない
+  ;; また、必要なら補完も行う事
+  ;; TODO: あとで
+  #f)
 
 (define (dispatch-w-nl goto-url query)
   ;; 今のところ、vimircのコピペのみ対応
   ;; 対応する必要があるのは、以下のような、一行80文字までの、改行区切りの文字列
   ;; (例1:vimircのシングルモード)
   ;;  [1]irc.server-name.|01:48 <nick>: あいうえおかきくけこさしすせ htt|@nick2
-  ;; *[3]#channnel       |      p://www.google.com/ そたちつてとなにぬね|~
+  ;; *[3]#channel        |      p://www.google.com/ そたちつてとなにぬね|~
   ;; ~                   |      のはひふへほ                            |~
-  ;; (例2:)
+  ;; (例2:vimircのマルチモード)
+  ;; 10:29 <nick03>: http://www.google.com/01234567890123456789012345678|nick04
+  ;;       90123456789                                                  |~
   ;;
-  (let/cc return
-    (let1 goto-url (make-goto-url return)
-      #f)))
+  ;; まず、行単位に分割(空行は除去)
+  (let1 queries (filter
+                  (lambda (x)
+                    (not (string=? "" x)))
+                  (string-split query  #/[\r\n]+/))
+    ;; 全ての行が、上のシングルモードまたはマルチモードに完全一致
+    ;; している事を確認し、発言部分のみを切り出し、そこからurlを抽出する
+    (define (resolve-lines lines)
+      (and-let* ((str (apply string-append lines))
+                 (extract-url str))
+        (goto-url url)))
+
+    (cond
+      ((queries->lines:vimirc-multi queries) => resolve-lines)
+      ((queries->lines:vimirc-multi queries) => resolve-lines)
+      (else #f))))
 
 (define (dispatch-w-cmd goto-url cmd query)
-  (let/cc return
-    (let1 goto-url (make-goto-url return)
-      ;; TODO: 対応可能コマンドはマクロで定義できるようにする事
-      ;; TODO: あとで
-      #f)))
+  ;; TODO: 対応可能コマンドはマクロで定義できるようにする事
+  ;; TODO: あとで
+  #f)
 
 (define *re:scheme*
   ;; http:// ttp:// tp://
@@ -119,8 +163,8 @@
   #/^(?:http|ttp|tp)(s?)\:\/\//)
 (define *re:userpass*
   ;; 空、もしくは user@ もしくは user:pass@ 
-  ;; TODO: 使用可能文字増やすべきかも
-  #/^(?:|(?:[\w\%]+(?:[\w\%]+)?\@))/)
+  ;; TODO: 使用可能文字種増やすべきかも
+  #/^(?:|(?:[\w\%\-]+(?:[\w\%\-]+)?\@))/)
 (define *re:domain*
   ;; domain.name:80
   #/^[\w\-]+(?:\.[\w\-]+)*(?:\:\d+)?/)
