@@ -1,3 +1,11 @@
+2011-02-10  yamada <yamada-remove-this-part@tir.jp>
+
+	* speedygosh : 0.1.6 release
+
+	* speedygosh : gauche/speedygosh/server-estp.scm
+	  - スクリプトは無名モジュールではなく、userモジュールにロードする
+
+
 2009-05-24  yamada <yamada-remove-this-part@tir.jp>
 
 	* speedygosh : 0.1.5 release

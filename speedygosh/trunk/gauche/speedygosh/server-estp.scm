@@ -84,11 +84,15 @@
   ;; stdin/stdoutのみフィルタリングして評価する。
   ;; ……と思ったが、load-script-to-moduleを呼び出す外側で既に
   ;; isolate-stdio-portを呼んであったので、ここでは省略する。
-  (let1 script-module (make-module #f)
+  ;;
+  ;; 元々は、無名モジュールを使っていたが、Gaucheのスクリプトは
+  ;; userモジュールにロードされる、という約束だったので、
+  ;; userモジュールをそのまま使う事に
+  (let1 script-module (find-module 'user)
     ;; 予め、*program-name* と *argv* を、userからimportしておく必要がある
-    (with-module user
-      (export *program-name* *argv*))
-    (eval '(import user) script-module)
+    ;(with-module user
+    ;  (export *program-name* *argv*))
+    ;(eval '(import user) script-module)
     ;; スクリプトを読み込む。エラー例外になったら、そのままエラーを投げる。
     ;; エラー内容はstderrに流す。
     (guard (e (else
@@ -186,9 +190,6 @@
         env))
     (lambda ()
       ;; note: *program-name* と *argv* をfluid-let しなくてはならない
-      ;; しかし、この二つはuserモジュールに本体があり、
-      ;; 既にスクリプトモジュールにexportされているので、
-      ;; userモジュールの方をfluid-letすればok。
       (with-module user
         (fluid-let ((*program-name* (guard (e (else *program-name*))
                                       (car argv)))
