@@ -20,6 +20,7 @@
   (use rfc.uri)
   (use rfc.cookie)
   (use util.list)
+  (use gauche.charconv)
   (export
     ))
 (select-module c-a-g.cgi)
@@ -112,17 +113,82 @@
         "説明"))))
 
 
+(define (substring-byte src start end)
+  (let1 result (make-byte-string (- end start))
+    (for-each
+      (lambda (idx)
+        (string-byte-set!
+          result
+          (- idx start)
+          (string-byte-ref src idx)))
+      (iota (- end start) start))
+    result))
 (define (queries->lines:vimirc-single queries)
-  ;; TODO: あとで
-  #f)
+  (let1 r (map
+            (lambda (line)
+              (and-let* (
+                         ;; マルチバイト文字のコンソール上の長さを正しく
+                         ;; 判断する為に、一旦Shift_JISに変換する
+                         (line-sjis (ces-convert line
+                                                 (gauche-character-encoding)
+                                                 'sjis))
+                         ;; 末尾の | を検査する
+                         (_ (< 67 (string-size line-sjis)))
+                         (_ (= (char->integer #\|)
+                               (string-byte-ref line-sjis 67)))
+                         ;; 末尾の | 以降を切り落とす
+                         (line2-sjis (substring-byte line-sjis 0 67))
+                         ;; 先頭の | を検査する
+                         (_ (= (char->integer #\|)
+                               (string-byte-ref line2-sjis 20)))
+                         ;; ログはじまりの空白を検査する
+                         (_ (= (char->integer #\space)
+                               (string-byte-ref line2-sjis 26)))
+                         ;; ログはじまりの空白までを切り落とす
+                         (line3-sjis (substring-byte line2-sjis 27 67))
+                         )
+                ;; Shift_JISから元に戻す
+                (ces-convert line3-sjis 'sjis (gauche-character-encoding))))
+            queries)
+    (if (find-tail not r)
+      #f ; 一個でも偽値があれば#fを返す
+      r)))
 (define (queries->lines:vimirc-multi queries)
-  ;; TODO: あとで
-  #f)
+  (let1 r (map
+            (lambda (line)
+              (and-let* (
+                         ;; マルチバイト文字のコンソール上の長さを正しく
+                         ;; 判断する為に、一旦Shift_JISに変換する
+                         (line-sjis (ces-convert line
+                                                 (gauche-character-encoding)
+                                                 'sjis))
+                         ;; 末尾の | を検査する
+                         (_ (< 67 (string-size line-sjis)))
+                         (_ (= (char->integer #\|)
+                               (string-byte-ref line-sjis 67)))
+                         ;; 末尾の | 以降を切り落とす
+                         (line2-sjis (substring-byte line-sjis 0 67))
+                         ;; 先頭の | を検査する
+                         ;(_ (= (char->integer #\|)
+                         ;      (string-byte-ref line2-sjis 20)))
+                         ;; ログはじまりの空白を検査する
+                         (_ (= (char->integer #\space)
+                               (string-byte-ref line2-sjis 5)))
+                         ;; ログはじまりの空白までを切り落とす
+                         (line3-sjis (substring-byte line2-sjis 6 67))
+                         )
+                ;; Shift_JISから元に戻す
+                (ces-convert line3-sjis 'sjis (gauche-character-encoding))))
+            queries)
+    (if (find-tail not r)
+      #f ; 一個でも偽値があれば#fを返す
+      r)))
 (define (extract-url str)
   ;; strにurlが複数含まれていても、一つだけしか取り出さない
   ;; また、必要なら補完も行う事
-  ;; TODO: あとで
-  #f)
+  ;; TODO: あとで補完対応を行う事
+  (and-let* ((m (*re:url* str)))
+    (m)))
 
 (define (dispatch-w-nl goto-url query)
   ;; 今のところ、vimircのコピペのみ対応
@@ -143,12 +209,16 @@
     ;; 全ての行が、上のシングルモードまたはマルチモードに完全一致
     ;; している事を確認し、発言部分のみを切り出し、そこからurlを抽出する
     (define (resolve-lines lines)
-      (and-let* ((str (apply string-append lines))
-                 (extract-url str))
+      (and-let* ((_ lines)
+                 (str (apply string-append lines))
+                 (url (extract-url str)))
         (goto-url url)))
 
     (cond
-      ((queries->lines:vimirc-multi queries) => resolve-lines)
+      ;; queriesが複数ない場合はパスする
+      ((< (length queries) 2) #f)
+      ;; singleを優先する必要がある(両方にマッチする可能性がある為)
+      ((queries->lines:vimirc-single queries) => resolve-lines)
       ((queries->lines:vimirc-multi queries) => resolve-lines)
       (else #f))))
 
@@ -243,14 +313,18 @@
              (_ (when (string=? "" query-wo-nl) (goto-url (self-url))))
              ;; コマンドを処理
              (_ (dispatch-w-cmd goto-url cmd query-wo-nl))
+             ;; コマンドではなかったので、コマンド部を再結合
+             (query-w-cmd-wo-nl (if cmd
+                                  (string-append cmd " " query-wo-nl)
+                                  query-wo-nl))
              ;; 内容がuriっぽかったら、uriとして処理を行う
-             (_ (dispatch-uri goto-url query-wo-nl))
+             (_ (dispatch-uri goto-url query-w-cmd-wo-nl))
              )
         ;; どれにもマッチしなかった。google検索する
         (goto-url
           (append-params-to-url
             "http://www.google.com/search"
-            `(("q" ,query-wo-nl))))))))
+            `(("q" ,query-w-cmd-wo-nl))))))))
 
 
 (define (append-params-to-url url params)
