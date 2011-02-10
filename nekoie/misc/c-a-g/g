@@ -1,5 +1,5 @@
-#!/usr/local/gauche/bin/gosh
-;#!/usr/local/gauche/bin/speedygosh
+#!/usr/local/gauche/bin/speedygosh
+;#!/usr/local/gauche/bin/gosh
 
 ;;; プロジェクト名の由来:
 ;;; 古き良き google deskbar のショートカットキーが ctrl + alt + G であり、
@@ -94,7 +94,7 @@
 (define (the-form query)
   (html:form
     :action (self-url)
-    :method "get"
+    :method "post"
     :target "_self"
     :name "send"
     (html:div
