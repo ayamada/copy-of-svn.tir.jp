@@ -3,7 +3,7 @@
 	* speedygosh : 0.1.6 release
 
 	* speedygosh : gauche/speedygosh/server-estp.scm
-	  - ������ץȤ�̵̾�⥸�塼��ǤϤʤ���user�⥸�塼��˥����ɤ���
+	  - スクリプトは無名モジュールではなく、userモジュールにロードする
 
 
 2009-05-24  yamada <yamada-remove-this-part@tir.jp>
@@ -11,12 +11,12 @@
 	* speedygosh : 0.1.5 release
 
 	* speedygosh : c/estp02.c
-	  - socket��Υ�֥��å��󥰥⡼�ɤˤ���Τ����
-	    (socket�ϥΥ�֥��å��󥰥⡼�ɤˤ���ȡ�
-	     fwrite()����Ϣ³������᤮�Ƥ��ޤ��äݤ�)
+	  - socketをノンブロッキングモードにするのをやめる
+	    (socketはノンブロッキングモードにすると、
+	     fwrite()時に連続で送り過ぎてしまうっぽい)
 
 	* speedygosh : gauche/speedygosh/server-estp.scm
-	  - stdin�ΥХåե���󥰥⡼�ɤ�:modest���顢gaucheɸ���:full���ѹ�
+	  - stdinのバッファリングモードを、:modestから、gauche標準の:fullに変更
 
 
 2007-05-10  yamada <yamada-remove-this-part@tir.jp>
@@ -24,9 +24,9 @@
 	* speedygosh : 0.1.4 release
 
 	* speedygosh : gauche/speedygosh/server-estp.scm
-	  - main��³����¹Ԥ���ľ����(current-module)��
-	    ������ץȥ⥸�塼����ѹ�����Τ�˺��Ƥ������������
-	    (load�ϼ�³�������꤬ȯ�����Ƥ���)
+	  - main手続きを実行する直前に(current-module)を
+	    スクリプトモジュールに変更するのを忘れていたの問題を修正
+	    (load系手続きで問題が発生していた)
 
 
 2007-05-07  yamada <yamada-remove-this-part@tir.jp>
