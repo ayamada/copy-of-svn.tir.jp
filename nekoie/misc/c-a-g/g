@@ -25,8 +25,18 @@
     ))
 (select-module c-a-g.cgi)
 
-(define-macro (hoge . args)
-  '(...))
+(define *cmd-proc-table*
+  (make-hash-table 'equal?))
+(define *cmd-desc-table*
+  (make-hash-table 'equal?))
+(define-macro (define-cmd defines desc . bodies)
+  (let ((cmd (car defines))
+        (args (cdr defines)))
+    `(begin
+       (hash-table-put! *cmd-proc-table* ,(x->string cmd) (lambda ,args
+                                                            ,@bodies))
+       (hash-table-put! *cmd-desc-table* ,(x->string cmd) ,desc)
+       )))
 
 (define (main args)
   (set! (port-buffering (current-error-port)) :line)
@@ -223,9 +233,9 @@
       (else #f))))
 
 (define (dispatch-w-cmd goto-url cmd query)
-  ;; TODO: 対応可能コマンドはマクロで定義できるようにする事
-  ;; TODO: あとで
-  #f)
+  (and-let* ((proc (hash-table-get *cmd-proc-table* cmd #f))
+             (result (proc query)))
+    (goto-url result)))
 
 (define *re:scheme*
   ;; http:// ttp:// tp://
@@ -421,6 +431,28 @@
 
 (define (self-path/slash)
   (string-append (self-path) "/"))
+
+
+
+
+
+
+(define (sanitize-query query)
+  (regexp-replace-all #/\n|\r|\s/ query ""))
+
+;;; 以下は、個々のコマンド定義
+
+(define-cmd (g query)
+  "gauche-refj から検索"
+  (string-append
+    ;; TODO: 部分一致や複数検索可能な別cgiを探して、そっちに飛ばした方がいい
+    "http://practical-scheme.net/gauche/man/?l=jp&p="
+    (uri-encode-string (sanitize-query query))))
+
+
+
+
+
 
 ;;;===================================================================
 
