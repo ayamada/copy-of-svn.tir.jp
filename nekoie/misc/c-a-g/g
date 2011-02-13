@@ -442,8 +442,20 @@
 
 ;;; 以下は、個々のコマンド定義
 
+(define-cmd (e query)
+  "英辞郎"
+  (string-append
+    "http://eow.alc.co.jp/"
+    (uri-encode-string (sanitize-query query))
+    "/UTF-8/"))
+;(define-cmd (ej query)
+;  "英和"
+;  ...)
+;(define-cmd (je query)
+;  "和英"
+;  ...)
 (define-cmd (g query)
-  "gauche-refj から検索"
+  "gauche-refj"
   (string-append
     ;; TODO: 部分一致や複数検索可能な別cgiを探して、そっちに飛ばした方がいい
     "http://practical-scheme.net/gauche/man/?l=jp&p="
