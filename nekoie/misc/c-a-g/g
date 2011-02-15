@@ -6,6 +6,8 @@
 ;;; google deskbar なき後、 mayu および yamy の設定ファイルに
 ;;; このショートカットキーを定義する際の設定が「C-A-G」であった事に由来する。
 
+;; TODO: ファイル名をdにする(dispatcher)
+
 ;; TODO: 簡易履歴機能(というか、ストレージ機能)をつける？
 ;; TODO: 簡易eval機能をつける？
 ;; TODO: 最終的には、自己組織化可能にする？
@@ -448,6 +450,18 @@
     "http://eow.alc.co.jp/"
     (uri-encode-string (sanitize-query query))
     "/UTF-8/"))
+(define-cmd (w query)
+  "ja.wikipedia.org"
+  (string-append
+    "http://ja.wikipedia.org/wiki/"
+    (uri-encode-string (sanitize-query query))))
+(define-cmd (a query)
+  "amazon.co.jp"
+  (string-append
+    "http://www.amazon.co.jp/s/?__mk_ja_JP="
+    (uri-encode-string "カタカナ")
+    "&url=search-alias%3Daps&field-keywords="
+    (uri-encode-string (sanitize-query query))))
 ;(define-cmd (ej query)
 ;  "英和"
 ;  ...)
@@ -458,6 +472,7 @@
   "gauche-refj"
   (string-append
     ;; TODO: 部分一致や複数検索可能な別cgiを探して、そっちに飛ばした方がいい
+    ;; TODO: http://www.callcc.net/gauche/refj/
     "http://practical-scheme.net/gauche/man/?l=jp&p="
     (uri-encode-string (sanitize-query query))))
 
