@@ -142,7 +142,7 @@
   (list
     (html:p
       (html:a
-        :href "#"
+        :href "http://d.hatena.ne.jp/ranekov/20110217/1297877823"
         "explanation(japanese)"))
     (html:div
       (html:tt
