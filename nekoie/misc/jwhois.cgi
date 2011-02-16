@@ -102,7 +102,7 @@
 
   (html:form
     :action (self-url)
-    :method "post"
+    :method "get"
     :target "_self"
     :name "send"
     (html:div
