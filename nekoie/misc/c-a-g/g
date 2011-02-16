@@ -462,6 +462,11 @@
     (uri-encode-string "カタカナ")
     "&url=search-alias%3Daps&field-keywords="
     (uri-encode-string (sanitize-query query))))
+(define-cmd (j query)
+  "jwhois"
+  (string-append
+    "http://sakura.tir.jp/jwhois.cgi?q="
+    (uri-encode-string (sanitize-query query))))
 ;(define-cmd (ej query)
 ;  "英和"
 ;  ...)
