@@ -2,6 +2,8 @@
 ;#!/usr/local/gauche/bin/gosh
 ;#!/usr/local/gauche/bin/speedygosh
 
+;; sakura.tir.jp に設置するセッティングにしてある
+
 (define-module jwhois.cgi
   (use www.cgi)
   (use rfc.http)
@@ -111,7 +113,7 @@
       (html:input :type "submit" ;:name "submit"
                   :id "post-submit" :value "enter")
       )
-    (javascript "self.document.send.q.focus();")
+    ;(javascript "self.document.send.q.focus();")
     ))
 
 (define (option->list option)
