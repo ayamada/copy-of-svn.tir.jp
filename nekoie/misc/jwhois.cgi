@@ -49,7 +49,11 @@
 
 (define (sanitize-query query)
   ;; 許可する文字は、ドメイン名、ip、JPNIC HANDLE、で利用可能な文字のみ
-  (regexp-replace-all #/[^\w\.\/\-]/ query ""))
+  ;; また、ハイフンはじまりはjwhoisコマンドのオプションとして認識される為、
+  ;; 許可しない
+  (regexp-replace #/^\-+/ 
+    (regexp-replace-all #/[^\w\.\/\-]/ query "")
+    ""))
 
 
 (define (emit-content params)
