@@ -23,13 +23,14 @@ case ${HOSTNAME} in
     ;;
   *.so.tir.jp)
     PATH=$PATH:$HOME/bin
+    MANPATH=/usr/local/share/man:$MANPATH
     ;;
   mana)
     PATH=/usr/local/ymir/subversion/bin:/usr/local/gauche/bin:/usr/local/ymir/perl/bin:$HOME/bin:/usr/local/bin:/usr/bin:/bin
     ;;
 esac
 
-export PATH
+export PATH MANPATH
 
 case ${TERM} in
   *term*)
