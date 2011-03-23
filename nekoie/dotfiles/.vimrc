@@ -10,6 +10,7 @@ match strong /　\|\t/
 "         註：↑ココに全角スペースがあります。注意
 
 set nocp
+set history=256
 set fileencodings-=ucs-2le,ucs-2
 set fileformats=unix,dos,mac
 "set list
