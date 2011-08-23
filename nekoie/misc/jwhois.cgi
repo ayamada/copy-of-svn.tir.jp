@@ -140,7 +140,25 @@
         (html:tt
           (intersperse
             (html:br)
-            (map hes/sp (process-output->string-list cmd :encoding "*JP"))))))))
+            (map
+              hes/sp
+              (cmd->result cmd))))))))
+
+(define (cmd->result cmd)
+  (call-with-input-process
+    cmd
+    (lambda (p)
+      (reverse
+        (let next ((result '())
+                   (str (read-line p #t)))
+          (if (eof-object? str)
+            result
+            (next
+              (cons
+                (ces-convert str "*JP")
+                result)
+              (read-line p #t))))))))
+
 
 (define (the-help)
   (list
