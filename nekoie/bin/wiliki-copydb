@@ -1,0 +1,109 @@
+#!/usr/bin/env gosh
+;;;
+;;; Convert character encoding of WiLiKi database
+;;; $Id: wiliki-copydb,v 1.1 2005/11/10 02:02:09 shirok Exp $
+;;;
+
+(use gauche.parseopt)
+(use gauche.charconv)
+(use util.match)
+(use dbm)
+
+(define-constant DEFAULT_DBM "gdbm")
+(define-constant DEFAULT_ENCODING (gauche-character-encoding))
+
+(define (usage)
+  (print "Usage: wiliki-copydb [-s <type>][-d <type>] <src-db> [<src-log>] <dst-db> [<dst-log>]")
+  (print "  <type> specifies the dbm type and CES encoding of source (-s) and")
+  (print "  destination (-d), respectively.  Its format is:")
+  (print "      [dbmtype][.encoding]")
+  (print "  When ommitted, dbmtype is assumed gdbm, and encoding is assumed")
+  (print "  the gauche's native encoding.")
+  (print "Examples:")
+  (print "  Copy wiliki.dbm and wiliki.log, to new.dbm and new.log, changing")
+  (print "  encoding from euc-jp to utf-8:")
+  (print "    wiliki-copydb -s .euc-jp -d .utf-8 wiliki.dbm wiliki.log new.dbm new.log")
+  (print "  Copy wiliki.dbm to new.dbm, discarding log file, and changing the")
+  (print "  database format:")
+  (print "    wiliki-copydb -s fsdbm.euc-jp -d gdbm.euc-jp wiliki.dbm new.dbm")
+  (exit 0)
+  )
+
+(define-condition-type <app-error> <error> #f)
+  
+
+(define-method do-copy-dbm ((stype <dbm-meta>)
+                            (senc <symbol>)
+                            (dtype <dbm-meta>)
+                            (denc <symbol>)
+                            (src <string>)
+                            (dst <string>))
+  (let ((sdb (dbm-open stype :path src :rw-mode :read))
+        (ddb (dbm-open dtype :path dst :rw-mode :write)))
+    (dbm-for-each sdb
+                  (lambda (key val)
+                    (dbm-put! ddb
+                              (ces-convert key senc denc)
+                              (ces-convert val senc denc))))
+    ))
+
+(define-method do-copy-log ((senc <symbol>)
+                            (denc <symbol>)
+                            (src  <string>)
+                            (dst  <string>))
+  (call-with-input-file src
+    (lambda (s)
+      (call-with-output-file dst
+        (lambda (d)
+          (copy-port s d :unit 'char))
+        :encoding denc
+        :if-exists :supersede))
+    :encoding senc))
+
+(define (load-dbm-class name)
+  (let ((s (string->symbol #`"dbm.,name"))
+        (c (string->symbol #`"<,|name|>")))
+    (guard (e
+            ((<error> e)
+             (errorf <app-error> "Couldn't load ~a: wrong DBM class?" s)))
+      (eval `(use ,s) (current-module))
+      (global-variable-ref (current-module) c))))
+
+(define (type->dbmclass&encoding type)
+  (rxmatch-case type
+    (test not (values (load-dbm-class DEFAULT_DBM) DEFAULT_ENCODING))
+    (#/^([\w-]+)?(?:\.([\w-]+))?$/ (#f dbmtype enc)
+     (values (load-dbm-class (or dbmtype DEFAULT_DBM))
+             (if enc (string->symbol enc) DEFAULT_ENCODING)))
+    (else
+     (error <app-error> "invalid type spec:" type))))
+               
+(define (check-destination dtype dst-db dst-log)
+  (when (dbm-db-exists? dtype dst-db)
+    (errorf <app-error> "Destination database exists: ~a" dst-db))
+  (when (and dst-log (file-exists? dst-log))
+    (errorf <app-error> "Destination log file exists: ~a" dst-log)))
+
+(define (main args)
+  (let-args (cdr args) ((stypespec "s=s")
+                        (dtypespec "d=s") . args)
+    (guard (e ((<app-error> e)
+               (format (current-error-port) "~a\n" (ref e 'message))
+               (exit 1)))
+      (receive (stype senc) (type->dbmclass&encoding stypespec)
+        (receive (dtype denc) (type->dbmclass&encoding dtypespec)
+          (match args
+            ((sdb slog ddb dlog)
+             (check-destination dtype ddb dlog)
+             (do-copy-dbm stype senc dtype denc sdb ddb)
+             (do-copy-log senc denc slog dlog))
+            ((sdb ddb)
+             (check-destination dtype ddb #f)
+             (do-copy-dbm stype senc dtype denc sdb ddb))
+            (else
+             (usage))))))
+    0))
+
+;;; Local variables:
+;;; mode: scheme
+;;; end:

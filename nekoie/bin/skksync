@@ -1,0 +1,21 @@
+#!/bin/sh
+# $Id$
+# TODO: delete from ~/.skk-delete
+WORK=/home/nekoie/tmp/skksync
+cp ~/.skk-jisyo ~/.skk-jisyo.bak.`date +%Y%m%d%H%M%S`
+rm -rf $WORK
+mkdir -p $WORK
+cd $WORK &&
+scp n:.skk-jisyo n &&
+scp c:.skk-jisyo c &&
+scp l:.skk-jisyo l &&
+cat ~/.skk-jisyo n c l > j &&
+skkdic-expr j | skkdic-sort > r &&
+cp r ~/.skk-jisyo &&
+scp r n:.skk-jisyo &&
+scp r c:.skk-jisyo &&
+scp r l:.skk-jisyo &&
+echo done. ||
+echo error.
+
+# vim:set ft=sh sw=2 ts=2 et:
