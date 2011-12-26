@@ -1,0 +1,153 @@
+#!/bin/sh
+
+IPT="/sbin/iptables"
+IF="eth0"
+
+echo -n "setting iptables..."
+
+########
+
+# base policy all accept
+${IPT} -P INPUT ACCEPT
+${IPT} -P OUTPUT ACCEPT
+${IPT} -P FORWARD ACCEPT
+${IPT} -t nat -P PREROUTING ACCEPT
+${IPT} -t nat -P POSTROUTING ACCEPT
+${IPT} -t nat -P OUTPUT ACCEPT
+
+# clear setting
+${IPT} -F
+${IPT} -X
+${IPT} -t nat -F
+${IPT} -t nat -X
+
+########
+# checking loopback and private addr packet
+
+# reject 127.0.0.0/8
+${IPT} -A INPUT -i ${IF} -s 127.0.0.0/8 -j DROP
+${IPT} -A OUTPUT -o ${IF} -d 127.0.0.0/8 -j DROP
+
+# not reject 192.168.0.0/16
+#${IPT} -A INPUT -i ${IF} -s 192.168.0.0/16 -j DROP # 許可
+#${IPT} -A OUTPUT -o ${IF} -d 192.168.0.0/16 -j DROP # 許可
+
+########
+# blacklist
+
+${IPT} -A INPUT -i ${IF} -s 110.45.136.0/21 -j DROP
+${IPT} -A OUTPUT -o ${IF} -d 110.45.136.0/21 -j DROP
+# 台湾の何処かからnessusっぽいスキャンをかけられたので、ブロックごと排除
+#${IPT} -A INPUT -i ${IF} -s 211.20.11.0/24 -j DROP
+#${IPT} -A OUTPUT -o ${IF} -d 211.20.11.0/24 -j DROP
+# avoid to gaisbot
+#${IPT} -A INPUT -i ${IF} -s 140.123.103.0/24 -j DROP
+#${IPT} -A INPUT -i ${IF} -s 64.62.168.0/24 -j DROP
+# その他、一時的なもの等
+#${IPT} -A INPUT -i ${IF} -s 219.9.60.150 -j DROP
+#${IPT} -A OUTPUT -o ${IF} -d 219.9.60.150 -j DROP
+
+########
+# icmp chain
+
+${IPT} -N icmp-acc
+${IPT} -A icmp-acc -p icmp --icmp-type destination-unreachable -j ACCEPT
+${IPT} -A icmp-acc -p icmp --icmp-type source-quench -j ACCEPT
+${IPT} -A icmp-acc -p icmp --icmp-type time-exceeded -j ACCEPT
+${IPT} -A icmp-acc -p icmp --icmp-type parameter-problem -j ACCEPT
+${IPT} -A icmp-acc -p icmp --icmp-type echo-reply -j ACCEPT
+${IPT} -A icmp-acc -p icmp --icmp-type echo-request -m limit --limit 2/second --limit-burst 5 -j ACCEPT
+${IPT} -A icmp-acc -p icmp --icmp-type echo-request -j DROP
+
+########
+
+# allow connected connection
+${IPT} -N connected
+${IPT} -A connected -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# allow service for input
+${IPT} -N inserv
+${IPT} -A inserv -i ${IF} -p tcp --dport 20 -m state --state NEW -j ACCEPT # ftp-data
+${IPT} -A inserv -i ${IF} -p tcp --dport 25 -m state --state NEW -j ACCEPT # smtp
+${IPT} -A inserv -i ${IF} -p tcp --dport 53 -m state --state NEW -j ACCEPT # dns
+${IPT} -A inserv -i ${IF} -p udp --dport 53 -m state --state NEW -j ACCEPT # dns
+${IPT} -A inserv -i ${IF} -p tcp --dport 80 -m state --state NEW -j ACCEPT # http
+${IPT} -A inserv -i ${IF} -p tcp --dport 113 -m state --state NEW -j REJECT # ident
+${IPT} -A inserv -i ${IF} -p tcp --dport 443 -m state --state NEW -j ACCEPT # https
+${IPT} -A inserv -i ${IF} -p tcp --dport 7022 -m state --state NEW -j ACCEPT # ssh
+#${IPT} -A inserv -i ${IF} -p tcp --dport 7666 -m state --state NEW -j ACCEPT # irc
+#${IPT} -A inserv -i ${IF} -p tcp --dport 8888 -m state --state NEW -j ACCEPT # http(test)
+#${IPT} -A inserv -i ${IF} -p tcp --dport 5900 -m state --state NEW -j ACCEPT # http(test)
+${IPT} -A inserv -i ${IF} -p tcp --dport 49600:49999 -m state --state NEW -j ACCEPT # ftp-passive
+${IPT} -A inserv -i ${IF} -p tcp --dport 63390 -m state --state NEW -j ACCEPT # rdp
+
+# allow service for output
+${IPT} -N outserv
+${IPT} -A outserv -o ${IF} -p tcp --dport 20:23 -m state --state NEW -j ACCEPT # ftp, ssh, telnet
+${IPT} -A outserv -o ${IF} -p tcp --dport 25 -m state --state NEW -j ACCEPT # smtp
+${IPT} -A outserv -o ${IF} -p tcp --dport 43 -m state --state NEW -j ACCEPT # whois
+${IPT} -A outserv -o ${IF} -p tcp --dport 53 -m state --state NEW -j ACCEPT # dns
+${IPT} -A outserv -o ${IF} -p udp --dport 53 -m state --state NEW -j ACCEPT # dns
+${IPT} -A outserv -o ${IF} -p tcp --dport 80 -m state --state NEW -j ACCEPT # http
+${IPT} -A outserv -o ${IF} -p tcp --dport 110 -m state --state NEW -j ACCEPT # pop3
+${IPT} -A outserv -o ${IF} -p tcp --dport 113 -m state --state NEW -j ACCEPT # ident
+${IPT} -A outserv -o ${IF} -p tcp --dport 119 -m state --state NEW -j ACCEPT # netnews
+${IPT} -A outserv -o ${IF} -p tcp --dport 123 -m state --state NEW -j ACCEPT # ntp
+${IPT} -A outserv -o ${IF} -p udp --dport 123 -m state --state NEW -j ACCEPT # ntp
+${IPT} -A outserv -o ${IF} -p tcp --dport 443 -m state --state NEW -j ACCEPT # https
+${IPT} -A outserv -o ${IF} -p tcp --dport 873 -m state --state NEW -j ACCEPT # rsync
+${IPT} -A outserv -o ${IF} -p tcp --dport 2401 -m state --state NEW -j ACCEPT # cvs-pserver
+${IPT} -A outserv -o ${IF} -p udp --dport 2401 -m state --state NEW -j ACCEPT # cvs-pserver
+${IPT} -A outserv -o ${IF} -p tcp --dport 6660:6669 -m state --state NEW -j ACCEPT # irc
+${IPT} -A outserv -o ${IF} -p tcp --dport 9418 -m state --state NEW -j ACCEPT # git
+
+# allow super ip
+${IPT} -N super-in
+${IPT} -N super-out
+# other *.so.tir.jp
+#${IPT} -A super-in -s 210.224.176.48/28 -m state --state NEW -j ACCEPT
+#${IPT} -A super-out -d 210.224.176.48/28 -m state --state NEW -j ACCEPT
+# sv.tir.ne.jp
+#${IPT} -A super-in -s 211.10.15.202 -m state --state NEW -j ACCEPT
+#${IPT} -A super-out -d 211.10.15.202 -m state --state NEW -j ACCEPT
+# boss
+${IPT} -A super-in -s 125.29.58.117 -m state --state NEW -j ACCEPT
+${IPT} -A super-out -d 125.29.58.117 -m state --state NEW -j ACCEPT
+# *.sc.tir.ne.jp
+${IPT} -A super-in -s 133.242.22.106 -m state --state NEW -j ACCEPT
+${IPT} -A super-out -d 133.242.22.106 -m state --state NEW -j ACCEPT
+
+########
+# join all chains
+
+${IPT} -A INPUT -i lo -j ACCEPT
+${IPT} -A OUTPUT -o lo -j ACCEPT
+
+${IPT} -A INPUT -j connected
+${IPT} -A OUTPUT -j connected
+
+${IPT} -A INPUT -j super-in
+${IPT} -A OUTPUT -j super-out
+${IPT} -A FORWARD -j super-in
+${IPT} -A FORWARD -j super-out
+
+${IPT} -A INPUT -j inserv
+${IPT} -A OUTPUT -j outserv
+
+${IPT} -A INPUT -j icmp-acc
+${IPT} -A OUTPUT -j icmp-acc
+
+########
+# base policy all drop
+
+${IPT} -P INPUT DROP
+${IPT} -P OUTPUT DROP
+${IPT} -P FORWARD DROP
+#${IPT} -t nat -P PREROUTING DROP
+#${IPT} -t nat -P POSTROUTING DROP
+#${IPT} -t nat -P OUTPUT DROP
+
+/etc/init.d/iptables save
+#rc-update add iptables boot
+echo "done."
+
