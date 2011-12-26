@@ -18,15 +18,11 @@
 # あとで上手い事修正する事。
 
 case ${HOSTNAME} in
-  sv.tir.ne.jp)
-    PATH=/usr/local/perl/bin:/usr/local/python/bin:$PATH:$HOME/.bin
-    ;;
-  *.so.tir.jp)
-    PATH=$PATH:$HOME/bin
-    MANPATH=/usr/local/share/man:$MANPATH
-    ;;
   mana)
     PATH=/usr/local/ymir/subversion/bin:/usr/local/gauche/bin:/usr/local/ymir/perl/bin:$HOME/bin:/usr/local/bin:/usr/bin:/bin
+    ;;
+  m.sc.tir.ne.jp)
+    PATH=$PATH:$HOME/bin
     ;;
 esac
 
