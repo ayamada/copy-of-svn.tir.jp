@@ -105,8 +105,8 @@ ${IPT} -A outserv -o ${IF} -p tcp --dport 9418 -m state --state NEW -j ACCEPT # 
 ${IPT} -N super-in
 ${IPT} -N super-out
 # other *.so.tir.jp
-#${IPT} -A super-in -s 210.224.176.48/28 -m state --state NEW -j ACCEPT
-#${IPT} -A super-out -d 210.224.176.48/28 -m state --state NEW -j ACCEPT
+${IPT} -A super-in -s 210.224.176.48/28 -m state --state NEW -j ACCEPT
+${IPT} -A super-out -d 210.224.176.48/28 -m state --state NEW -j ACCEPT
 # sv.tir.ne.jp
 #${IPT} -A super-in -s 211.10.15.202 -m state --state NEW -j ACCEPT
 #${IPT} -A super-out -d 211.10.15.202 -m state --state NEW -j ACCEPT
