@@ -47,10 +47,9 @@ case "${HOSTNAME}" in
     COLOR_PROMPT=$COLOR_GREEN
     prompt_gorgeous
     ;;
-  "sv.tir.ne.jp")
+  "m.sc.tir.ne.jp")
     umask 022
     unset CVS_RSH
-    export CVSROOT=/home/cvs/cvsroot
     export MAIL=~/Maildir
     screen_sorendition="= yk"
     COLOR_PROMPT=$COLOR_GREEN

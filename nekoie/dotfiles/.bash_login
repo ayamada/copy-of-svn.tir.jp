@@ -17,6 +17,8 @@
 # この辺は、コマンドの有無で、PATHに追加するかを決めるように、
 # あとで上手い事修正する事。
 
+export HOSTNAME=`hostname -f`
+
 case ${HOSTNAME} in
   mana)
     PATH=/usr/local/ymir/subversion/bin:/usr/local/gauche/bin:/usr/local/ymir/perl/bin:$HOME/bin:/usr/local/bin:/usr/bin:/bin
@@ -27,6 +29,9 @@ case ${HOSTNAME} in
 esac
 
 export PATH MANPATH
+
+#export LANG=C
+export LANG=ja_JP.utf8
 
 case ${TERM} in
   *term*)
