@@ -4,7 +4,8 @@
 
 SHELL=zsh # bash経由で起動する場合に役立つ
 
-LANG=C # 邪魔な日本語メッセージを出さない
+#LANG=C # 邪魔な日本語メッセージを出さない
+LANG=ja_JP.utf8
 
 # エディタ設定
 if vim --version > /dev/null 2>&1; then
@@ -19,13 +20,14 @@ fi
 VISUAL=$EDITOR
 
 # ページャ設定
-if lv -V > /dev/null 2>&1; then
-  PAGER=lv
-elif jless --version > /dev/null 2>&1; then
-  PAGER=jless
-else
-  PAGER=less
-fi
+#if lv -V > /dev/null 2>&1; then
+#  PAGER=lv
+#elif jless --version > /dev/null 2>&1; then
+#  PAGER=jless
+#else
+#  PAGER=less
+#fi
+PAGER=less
 JLESSCHARSET=japanese
 
 export SHELL LANG EDITOR VISUAL PAGER JLESSCHARSET

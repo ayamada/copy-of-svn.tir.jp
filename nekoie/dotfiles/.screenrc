@@ -1,10 +1,14 @@
 # $Id$
-defencoding eucJP
-defkanji eucJP
+defencoding utf8
+defkanji utf8
+#cjkwidth on
+
 startup_message off
 
 multiuser on
 #acladd nekoie
+
+shell -bash
 
 # 端末最下行のステータス欄の色設定
 # この色は、screen階層か、hostによって変えたいが…‥どうすればいい？
@@ -38,6 +42,7 @@ msgwait 1
 #   無難だと思う
 #caption splitonly
 caption splitonly "[%02c][%2n %t] %=%W"
+#caption always "[%02c][%2n %t] %=%W"
 #caption always '%3n %t %= %c:%s'
 #caption always "[%n %t] %W %l %Y/%m/%d %c"
 # ↑コレは指定したいが、w3m使用時には出したく無いので、.zshrcから実行する
