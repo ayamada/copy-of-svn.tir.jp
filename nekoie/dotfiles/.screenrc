@@ -1,7 +1,7 @@
 # $Id$
 defencoding utf8
 defkanji utf8
-#cjkwidth on
+cjkwidth on
 
 startup_message off
 
