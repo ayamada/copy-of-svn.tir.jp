@@ -1,0 +1,5 @@
+#!/bin/sh
+# $Id$
+DUSTBOX="${HOME}/.dustbin"
+rm -rf $DUSTBOX
+# vim:set ft=sh sw=2 ts=2 et:
