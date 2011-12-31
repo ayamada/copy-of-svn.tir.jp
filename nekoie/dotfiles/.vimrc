@@ -11,7 +11,7 @@ match strong /¡¡\|\t/
 
 set nocp
 set history=256
-set encoding=utf-8
+set termencoding=utf-8
 set fileencodings-=ucs-2le,ucs-2
 set fileformats=unix,dos,mac
 "set list
