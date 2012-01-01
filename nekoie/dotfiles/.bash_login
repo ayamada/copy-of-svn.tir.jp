@@ -23,6 +23,9 @@ case ${HOSTNAME} in
   mana)
     PATH=/usr/local/ymir/subversion/bin:/usr/local/gauche/bin:/usr/local/ymir/perl/bin:$HOME/bin:/usr/local/bin:/usr/bin:/bin
     ;;
+  m.sc.tir.ne.jp)
+    PATH=/usr/local/gauche/bin:$PATH:$HOME/bin
+    ;;
   *)
     PATH=$PATH:$HOME/bin
     ;;

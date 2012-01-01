@@ -198,7 +198,7 @@ bind I login on
 bind O login off
 bind } history
 bind ^U encoding utf8
-bind ^E encoding eucJP
+bind ^E encoding eucJP utf8
 
 # ди╡ц
 #bind k focus up
