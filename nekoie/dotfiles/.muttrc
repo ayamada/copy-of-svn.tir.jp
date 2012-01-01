@@ -1,0 +1,136 @@
+
+set realname="yamada"
+set from="yamada-a@tir.jp"
+set hostname="m.sc.tir.ne.jp"
+
+set sendmail="/usr/sbin/sendmail"
+
+#set msgid=yes
+
+#set signature=.signature
+
+#set cjk_width=yes
+
+# enable charset for your terminal
+set charset="utf-8"
+# you should not change the following configurations.
+set send_charset="us-ascii:iso-2022-jp"
+set attach_charset="iso-2022-jp:euc-jp:shift_jis:utf-8"
+#set strict_mime=no
+set assumed_charset="iso-2022-jp:euc-jp:shift_jis:utf-8"
+set thorough_search=yes
+set sanitize_ja_chars=yes
+set rfc2047_parameters=yes
+#set create_rfc2047_parameters=yes
+#set use_jisx0208
+set forward_decode=yes
+set mime_forward_decode=no
+# I prefer the following configurations. 
+set edit_headers=yes
+#set confirmappend=no
+set folder="~/Mail"
+#set save_name=yes
+#set force_name=yes
+#set alias_file="~/.mutt/alias"
+#source $HOME/.mutt/alias
+set sort=date-received
+#set pager="/usr/local/bin/less"
+set editor="vim"
+
+set include_onlyfirst=yes
+set mbox_type=Maildir
+set spoolfile="~/Maildir"
+set mbox="+mbox"
+set postponed="+postponed"
+set record="+outbox"
+set tmpdir="~/tmp"
+
+
+folder-hook . 'set sort=threads'
+
+set abort_nosubject=no
+set nomove
+set save_address
+
+set copy=yes
+
+set metoo=yes
+set pager_index_lines=4
+set tilde=yes
+
+# tree の char を設定
+# 変更しておいたほうがきれいです
+# それだけです
+# tree_chars
+#set tree_chars=yes
+#set tree_llcorner="+"
+#set tree_ulcorner="+"
+#set tree_ltee="+"
+#set tree_hline="-"
+#set tree_vline="|"
+#set tree_ttee="+"
+#set tree_btee="+"
+#set tree_space=" "
+##set tree_rarrow=">"
+#set tree_rarrow=""
+#set tree_star="*"
+#set tree_hidden="&"
+#set tree_equals="="
+#set tree_missing="?"
+
+
+# key bind を vi みたくする
+# key bind
+bind index g first-entry
+bind index G last-entry
+bind index h previous-page
+bind index l next-page
+bind pager k previous-line
+bind pager j next-line
+bind pager b previous-page
+bind pager g top
+bind pager G bottom
+bind pager c change-folder
+bind index r group-reply
+bind pager r group-reply
+
+
+set pgp_decode_command="gpg %?p?--passphrase-fd 0? --no-verbose --batch --output - %f"
+set pgp_verify_command="qkc -j %f; gpg --no-verbose --batch --output - --verify %s %f"
+set pgp_decrypt_command="gpg --passphrase-fd 0 --no-verbose --batch --output - %f"
+set pgp_sign_command="qkc -j %f; gpg --no-verbose --batch --output - --passphrase-fd 0 --armor --detach-sign --textmode %?a?-u %a? %f"
+set pgp_clearsign_command="qkc -j %f; gpg --no-verbose --batch --output - --passphrase-fd 0 --armor --textmode --clearsign %?a?-u %a? %f"
+set pgp_encrypt_only_command="qkc -j %f; pgpewrap gpg --batch --quiet --no-verbose --output - --encrypt --textmode --armor --always-trust --encrypt-to 0x6697A44F -- -r %r -- %f"
+set pgp_encrypt_sign_command="qkc -j %f; pgpewrap gpg --passphrase-fd 0 --batch --quiet --no-verbose --textmode --output - --encrypt --sign %?a?-u %a? --armor --always-trust --encrypt-to 0x6697A44F -- -r %r -- %f"
+set pgp_import_command="gpg --no-verbose --import -v %f"
+set pgp_export_command="gpg --no-verbose --export --armor %r"
+set pgp_verify_key_command="gpg --no-verbose --batch --fingerprint --check-sigs %r"
+set pgp_list_pubring_command="gpg --no-verbose --batch --with-colons --list-keys %r" 
+set pgp_list_secring_command="gpg --no-verbose --batch --with-colons --list-secret-keys %r" 
+set pgp_autosign=no
+#set fcc_clear=yes # not encrypting outbox ?
+set pgp_sign_as=0x6697A44F
+set pgp_replyencrypt=yes
+set pgp_timeout=1800
+set pgp_good_sign="^gpg: Good signature from"
+
+set pgp_long_ids=yes
+set pgp_strict_enc=no
+set pgp_verify_sig=ask-yes
+
+### color
+color normal white black
+color status yellow blue
+color error black red
+
+color bold white black
+color underline black white
+color header cyan black ^(From|Subject|Date):
+color indicator black cyan
+color markers green black
+color message cyan black
+color search black yellow
+color tilde magenta black
+color tree cyan black
+color quoted yellow black
+

@@ -1,0 +1,10 @@
+source ~/.muttrc
+
+set realname="yamada"
+set from="nekoie@ymir.co.jp"
+set hostname="ymir.co.jp"
+set sendmail="/usr/local/bin/esmtp"
+#set sendmail="/usr/sbin/sendmail"
+
+set signature=.signature_ymir
+
