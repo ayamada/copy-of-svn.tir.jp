@@ -1,13 +1,13 @@
 " $Id$
 
-" Èó¹á¤ê²°ÈÇvimÂĞ±ş
+" éé¦™ã‚Šå±‹ç‰ˆvimå¯¾å¿œ
 if filereadable($HOME . '/.vimrc_kaoriya')
   source $HOME/.vimrc_kaoriya
 endif
 
 hi strong term=reverse cterm=reverse gui=reverse
-match strong /¡¡\|\t/
-"         Ãğ¡§¢¬¥³¥³¤ËÁ´³Ñ¥¹¥Ú¡¼¥¹¤¬¤¢¤ê¤Ş¤¹¡£Ãí°Õ
+match strong /ã€€\|\t/
+"         è¨»ï¼šâ†‘ã‚³ã‚³ã«å…¨è§’ã‚¹ãƒšãƒ¼ã‚¹ãŒã‚ã‚Šã¾ã™ã€‚æ³¨æ„
 
 set nocp
 set history=256
