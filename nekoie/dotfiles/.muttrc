@@ -9,10 +9,11 @@ set sendmail="/usr/sbin/sendmail"
 
 #set signature=.signature
 
-#set cjk_width=yes
+set cjk_width=yes
 
 # enable charset for your terminal
 set charset="utf-8"
+set ascii_chars=yes
 # you should not change the following configurations.
 set send_charset="us-ascii:iso-2022-jp"
 set attach_charset="iso-2022-jp:euc-jp:shift_jis:utf-8"
