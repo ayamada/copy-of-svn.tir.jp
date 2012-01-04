@@ -38,10 +38,19 @@ if has('im_custom/skk')
   "set imoptions=skk,serv:127.0.0.1,port:1178
 endif
 
-set statusline=%<%f\ %m%r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=%l,%c%V%8P
+set statusline=%<%f\ %m%r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'.SkkGetModeStr()}%=%l,%c%V%8P
 
 " for gauche
 let is_gauche=1
 set dictionary=~/.gosh_completions
+
+" skk.vim
+let skk_jisyo = '~/.skk-jisyo'
+let skk_large_jisyo = '/usr/share/skk/SKK-JISYO.L'
+let skk_auto_save_jisyo = 1
+let skk_keep_state = 0
+let skk_egg_like_newline = 1
+let skk_show_annotation = 1
+let skk_use_face = 1
 
 " vim:set sw=2 ts=2 et:
