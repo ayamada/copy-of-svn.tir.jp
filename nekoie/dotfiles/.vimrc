@@ -52,5 +52,6 @@ let skk_keep_state = 0
 let skk_egg_like_newline = 1
 let skk_show_annotation = 1
 let skk_use_face = 1
+let skk_remap_lang_mode = 1
 
 " vim:set sw=2 ts=2 et:

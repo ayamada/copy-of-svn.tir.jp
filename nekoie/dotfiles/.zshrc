@@ -91,16 +91,19 @@ esac
 if [ ${UID} = 0 ]; then
   umask 022 # rootは常に022
   COLOR_PROMPT=$COLOR_RED
+  SUSER=$USER
   prompt_gorgeous
+else
+  SUSER=''
 fi
 
 # 通常時のラベルを求めておく
 case ${TERM} in
   *term*|vt100)
-    X_LABEL_NORMAL="\033]0;${USER}@${HOST}\007" # kterm title change
+    X_LABEL_NORMAL="\033]0;${SUSER}@${HOST}\007" # kterm title change
     ;;
   screen*)
-    X_LABEL_NORMAL="\033k${USER}@${HOST}\033\\" # child screen label change
+    X_LABEL_NORMAL="\033k${SUSER}@${HOST}\033\\" # child screen label change
     # ついでなので、screen回りの追加設定も行う
     s -X caption always > /dev/null 2>&1
     s -X sorendition ${screen_sorendition} > /dev/null 2>&1
