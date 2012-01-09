@@ -820,7 +820,7 @@
         (html:span (het "ËÜÊ¸: "))
         (html:br)
         (html:div
-          :style "border:1px black solid; padding: 2px"
+          :style "border:1px black solid; padding: 4px; margin: 4px; font-family: monospace"
           (text->inline-html
             content
             :url->href:keywords '(:target "_blank"))))
