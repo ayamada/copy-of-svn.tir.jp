@@ -24,9 +24,9 @@
 (use tir04.cgi.util)
 (use tir.lock)
 
-(define *dbm-file* "/home/nekoie/data/memo/memo.dbm")
-(define *lock-file* "/home/nekoie/data/memo/memo.lock")
-(define *log-file* "/home/nekoie/data/memo/memo.log")
+(define *dbm-file* "/var/nekoie/data/memo/memo.dbm")
+(define *lock-file* "/var/nekoie/data/memo/memo.lock")
+(define *log-file* "/var/nekoie/data/memo/memo.log")
 (define *encoding* (ces-guess-from-string "" "*JP"))
 (define *css-url* "http://css.tir.jp/tir.css")
 
