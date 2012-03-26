@@ -24,7 +24,7 @@ set sts=2
 set sw=2
 "set expandtab
 "set lazyredraw
-set cpo+=$
+"set cpo+=$
 
 if has('migemo')
   set migemo
