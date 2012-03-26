@@ -1,4 +1,4 @@
 #!/bin/sh
 # $Id$
-exec mutt -F ~/.muttrc_ymir
+exec mutt -F ~/.muttrc_ymir "$@"
 # vim:set ft=sh sw=2 ts=2 et:
