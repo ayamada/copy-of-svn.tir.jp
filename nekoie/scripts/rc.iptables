@@ -2,7 +2,7 @@
 
 IPT="/sbin/iptables"
 IF="eth0"
-HOME_IP="219.115.123.154"
+HOME_IP="219.115.0.0/16"
 
 echo -n "setting iptables..."
 
@@ -82,6 +82,7 @@ ${IPT} -A inserv -i ${IF} -p tcp --dport 7022 -m state --state NEW -j ACCEPT # s
 ${IPT} -A inserv -i ${IF} -p tcp --dport 49600:49999 -m state --state NEW -j ACCEPT # ftp-passive
 ${IPT} -A inserv -i ${IF} -p tcp -s ${HOME_IP} --dport 63390 -m state --state NEW -j ACCEPT # rdp
 ${IPT} -A inserv -i ${IF} -p tcp -s 27.228.0.0/14 --dport 63390 -m state --state NEW -j ACCEPT # rdp
+${IPT} -A inserv -i ${IF} -p udp --dport 60000:61000 -m state --state NEW -j ACCEPT # mosh
 
 # allow service for output
 ${IPT} -N outserv
@@ -102,6 +103,7 @@ ${IPT} -A outserv -o ${IF} -p tcp --dport 2401 -m state --state NEW -j ACCEPT # 
 ${IPT} -A outserv -o ${IF} -p udp --dport 2401 -m state --state NEW -j ACCEPT # cvs-pserver
 ${IPT} -A outserv -o ${IF} -p tcp --dport 6660:6669 -m state --state NEW -j ACCEPT # irc
 ${IPT} -A outserv -o ${IF} -p tcp --dport 9418 -m state --state NEW -j ACCEPT # git
+${IPT} -A outserv -o ${IF} -p udp --dport 60000:61000 -m state --state NEW -j ACCEPT # mosh
 
 # allow super ip
 ${IPT} -N super-in
