@@ -81,7 +81,10 @@ ${IPT} -A inserv -i ${IF} -p tcp --dport 7022 -m state --state NEW -j ACCEPT # s
 #${IPT} -A inserv -i ${IF} -p tcp --dport 5900 -m state --state NEW -j ACCEPT # http(test)
 ${IPT} -A inserv -i ${IF} -p tcp --dport 49600:49999 -m state --state NEW -j ACCEPT # ftp-passive
 ${IPT} -A inserv -i ${IF} -p tcp -s ${HOME_IP} --dport 63390 -m state --state NEW -j ACCEPT # rdp
-${IPT} -A inserv -i ${IF} -p tcp -s 27.228.0.0/14 --dport 63390 -m state --state NEW -j ACCEPT # rdp
+${IPT} -A inserv -i ${IF} -p tcp -s 27.228.0.0/14 --dport 63390 -m state --state NEW -j ACCEPT # rdp for mopera
+${IPT} -A inserv -i ${IF} -p tcp -s 110.160.0.0/14 --dport 63390 -m state --state NEW -j ACCEPT # rdp for mopera
+${IPT} -A inserv -i ${IF} -p tcp -s 183.72.0.0/14 --dport 63390 -m state --state NEW -j ACCEPT # rdp for mopera
+${IPT} -A inserv -i ${IF} -p tcp -s 220.159.0.0/16 --dport 63390 -m state --state NEW -j ACCEPT # rdp for mopera
 ${IPT} -A inserv -i ${IF} -p udp --dport 60000:61000 -m state --state NEW -j ACCEPT # mosh
 
 # allow service for output
