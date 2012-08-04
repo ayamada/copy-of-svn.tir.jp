@@ -132,6 +132,9 @@ zstyle ':completion:*' group-name ''
 # gitの未push検出ラッパー
 alias git=gitwrap
 
+# ls に色を付ける
+alias ls="ls --color=auto"
+
 # 以下は、エラーが出るかもしれないコマンド実行群
 # dircolors設定
 eval `dircolors -b 2> /dev/null` 2> /dev/null
