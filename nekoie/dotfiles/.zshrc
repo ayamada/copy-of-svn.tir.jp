@@ -134,7 +134,7 @@ alias git=gitwrap
 
 # 以下は、エラーが出るかもしれないコマンド実行群
 # dircolors設定
-eval `dircolors -z 2> /dev/null` 2> /dev/null
+eval `dircolors -b 2> /dev/null` 2> /dev/null
 # screen -lsの実行
 s -ls 2> /dev/null
 
