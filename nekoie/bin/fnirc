@@ -1,0 +1,5 @@
+#!/bin/sh
+# $Id$
+#export LANG=ja_JP.eucJP
+exec /usr/bin/vim -i NONE -u ~/.vimircrc_freenode --cmd "set encoding=utf-8" -c VimIRC
+# vim:set ft=sh sw=2 ts=2 et:
