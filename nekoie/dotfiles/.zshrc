@@ -93,6 +93,9 @@ if [ ${UID} = 0 ]; then
   COLOR_PROMPT=$COLOR_RED
   SUSER=$USER
   prompt_gorgeous
+  PATH="$PATH:/usr/local/bin"
+  LESS="-R -M --shift 5"
+  LESSOPEN="|lesspipe %s"
 else
   SUSER=''
 fi
