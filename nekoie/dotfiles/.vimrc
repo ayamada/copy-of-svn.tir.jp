@@ -8,6 +8,8 @@ endif
 hi strong term=reverse cterm=reverse gui=reverse
 match strong /　\|\t/
 "         註：↑ココに全角スペースがあります。注意
+"             また、この全角スペースの為に、vim本体のscriptencodingと
+"             .vimrcのfencが一致している必要がある事に注意！
 
 set nocp
 set history=256
@@ -22,7 +24,7 @@ set nobackup
 set ts=8
 set sts=2
 set sw=2
-"set expandtab
+set expandtab
 "set lazyredraw
 "set cpo+=$
 
@@ -42,7 +44,7 @@ set statusline=%<%f\ %m%r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'.SkkGetMod
 
 " for gauche
 let is_gauche=1
-set dictionary=~/.gosh_completions
+autocmd FileType scheme setlocal dictionary=~/.gosh_completions
 
 " skk.vim
 let skk_jisyo = '~/.skk-jisyo'
@@ -53,5 +55,35 @@ let skk_egg_like_newline = 1
 let skk_show_annotation = 1
 let skk_use_face = 1
 let skk_remap_lang_mode = 1
+
+" NeoBundle
+filetype off
+if has('vim_starting')
+  set runtimepath+='/home/nekoie/.vim/neobundle.vim.git/autoload'
+
+  call neobundle#rc(expand('~/.bundle'))
+endif
+
+NeoBundle 'Shougo/vimproc'
+NeoBundle 'Shougo/neocomplcache'
+NeoBundle 'ujihisa/neco-ghc'
+NeoBundle 'eagletmt/ghcmod-vim'
+"NeoBundle 'git://github.com/Shougo/vimproc.git'
+
+filetype plugin on
+filetype indent on
+
+autocmd FileType haskell NeoComplCacheEnable
+autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
+autocmd FileType haskell setlocal et
+
+let g:neocomplcache_enable_at_startup = 0
+let g:neocomplcache_enable_ignore_case = 0
+let g:neocomplcache_enable_smart_case = 0
+let g:neocomplcache_enable_auto_select = 0
+let g:neocomplcache_enable_camel_case_completion = 0
+let g:neocomplcache_enable_underbar_completion = 0
+let g:neocomplcache_min_syntax_length = 3
+let g:neocomplcache_auto_completion_start_length = 4
 
 " vim:set sw=2 ts=2 et:
