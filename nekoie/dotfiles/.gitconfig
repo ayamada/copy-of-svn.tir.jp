@@ -7,3 +7,5 @@
 	ui = true
 [core]
 	autocrlf = false
+[push]
+	default = current
