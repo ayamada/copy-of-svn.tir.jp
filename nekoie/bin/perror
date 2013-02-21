@@ -2,7 +2,7 @@
 #include <string.h>
 
 void usage() {
-  printf("usage: printf errornum\n");
+  printf("usage: perror errornum\n");
 }
 
 int main(int argc, char *argv[]) {
