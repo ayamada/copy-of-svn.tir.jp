@@ -1,0 +1,23 @@
+#!/usr/bin/tcc -run
+#include <string.h>
+
+void usage() {
+  printf("usage: printf errornum\n");
+}
+
+int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    usage();
+    exit(0);
+  }
+  int e = atoi(argv[1]);
+  if (e == 0) {
+    printf("cannot convert %s\n", argv[1]);
+    exit(1);
+  }
+
+  printf("%s\n", strerror(e));
+  exit(0);
+}
+
+/* vim:set ft=c: */
