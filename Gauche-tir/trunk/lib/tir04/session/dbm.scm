@@ -88,13 +88,17 @@
   (set! (dbm-of self) #f))
 
 (define-method inner:gc-session! ((self <session-dbm>))
-  (dbm-gc! (dbm-of self)))
+  ;; TODO: バージョンアップに伴い動かなくなってる、あとで対策する事
+  ;(dbm-gc! (dbm-of self))
+  )
 
 (define-method inner:get-session ((self <session-dbm>) sid fallback)
   (dbm-get (dbm-of self) sid #f))
 
 (define-method inner:touch-session! ((self <session-dbm>) sid)
-  (dbm-touch! (dbm-of self) sid #f))
+  ;; TODO: バージョンアップに伴い動かなくなってる、あとで対策する事
+  ;(dbm-touch! (dbm-of self) sid #f)
+  )
 
 (define-method inner:put-session! ((self <session-dbm>) sid session-data)
   (dbm-put! (dbm-of self) sid session-data))
@@ -112,6 +116,7 @@
   (next-method))
 (define-method remove-session! ((self <session-dbm>))
   (next-method))
+
 
 
 ;;; --------
