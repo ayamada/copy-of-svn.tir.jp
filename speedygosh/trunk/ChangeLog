@@ -2,7 +2,7 @@
 
 	* speedygosh : 0.1.8 release
 
-	* speedygosh : c/estp02.c c/estp02/h
+	* speedygosh : c/estp02.c c/estp02.h
 	  - connect() に渡すaddrlenは sizeof(struct sockaddr_un) 全部で
 	    いいようなので、 alignment とかでずれても大丈夫なように、
 	    全体のサイズを渡すようにしておく
@@ -12,7 +12,7 @@
 
 	* speedygosh : 0.1.7 release
 
-	* speedygosh : c/estp02.c c/estp02/h
+	* speedygosh : c/estp02.c c/estp02.h
 	  - sockaddr_unがsun_lenを持つos(*bsd, mac等)で動かなかった問題を修正
 
 
