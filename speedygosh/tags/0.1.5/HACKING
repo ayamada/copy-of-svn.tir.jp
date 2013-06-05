@@ -1,6 +1,0 @@
-As a developer, you have to start from generating "configure"
-script by autoconf.   You need autoconf version 2.54 or later.
-This command creates "configure" from configure.in.
-
-  % ./DIST gen
-
