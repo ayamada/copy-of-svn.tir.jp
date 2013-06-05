@@ -448,7 +448,7 @@ int estp02_comm (char *sock_path, int argc, char *argv[], char **env) {
 
   uds.sun_family = AF_UNIX;
   strcpy(uds.sun_path, sock_path);
-  int addrlen = sizeof(uds.sun_family) + strlen(uds.sun_path);
+  int addrlen = offsetof(struct sockaddr_un, sun_path) + strlen(uds.sun_path);
 
   int r = connect(sock_fd, (struct sockaddr*)&uds, addrlen);
   if (r < 0) return ERROR_FAILED_TO_CONNECT_SOCKET;
