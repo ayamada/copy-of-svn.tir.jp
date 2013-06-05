@@ -19,6 +19,7 @@ extern int errno;
 #include <sys/un.h>
 #include <sys/time.h>
 #include <signal.h>
+#include <stddef.h>
 
 #define ERROR_FAILED_TO_CONNECT_SOCKET -1
 
