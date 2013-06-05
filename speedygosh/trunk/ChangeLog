@@ -1,5 +1,15 @@
 2013-06-05  yamada
 
+	* speedygosh : 0.1.8 release
+
+	* speedygosh : c/estp02.c c/estp02/h
+	  - connect() に渡すaddrlenは sizeof(struct sockaddr_un) 全部で
+	    いいようなので、 alignment とかでずれても大丈夫なように、
+	    全体のサイズを渡すようにしておく
+
+
+2013-06-05  yamada
+
 	* speedygosh : 0.1.7 release
 
 	* speedygosh : c/estp02.c c/estp02/h
