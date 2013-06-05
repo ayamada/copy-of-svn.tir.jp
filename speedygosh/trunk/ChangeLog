@@ -1,3 +1,11 @@
+2013-06-05  yamada
+
+	* speedygosh : 0.1.7 release
+
+	* speedygosh : c/estp02.c c/estp02/h
+	  - sockaddr_unがsun_lenを持つos(*bsd, mac等)で動かなかった問題を修正
+
+
 2011-02-10  yamada <yamada-remove-this-part@tir.jp>
 
 	* speedygosh : 0.1.6 release
