@@ -28,6 +28,8 @@
 
 (def isomorphic-data (list mutable-data mutable-data))
 
+(def circular-data (atom (object-array [0 nil 2])))
+(aset ^"[Ljava.lang.Object;" @circular-data 1 circular-data)
   
 (deftest stress-test
   (testing "pack->unpack stress-data"
@@ -77,9 +79,20 @@
           target-a (:int-array (first target))
           target-b (:int-array (fnext target))
           ]
-      (is (= target-a target-b))
+      (is (identical? target-a target-b))
       (aset-int target-a 0 999)
       (is (= (seq target-a) (seq target-b)))
+      ))
+  (testing "circular?"
+    (let [original circular-data
+          target (unpack (pack circular-data))
+          ]
+      (is (= (aget ^"[Ljava.lang.Object;" @original 0)
+             (aget ^"[Ljava.lang.Object;" @target 0)))
+      (is (= (aget ^"[Ljava.lang.Object;" @original 2)
+             (aget ^"[Ljava.lang.Object;" @target 2)))
+      (is (= target (aget ^"[Ljava.lang.Object;" @target 1)))
+      (is (= @target @(aget ^"[Ljava.lang.Object;" @target 1)))
       ))
   )
 

@@ -1,18 +1,21 @@
 (ns vnctst.transpack.core
   )
 
-;;; TODO: must be support cyclic structures
-;;;       (現在は枝の末端から変換を行おうとする為、循環構造があると止まらない)
+;;; NB: This module cannot treat infinity lazy-seq!
+;;;     It is include "repeat" fn, because below expr is false.
+;;;     (let [r (repeat :a)] (identical? r (rest r)))
 
 ;;; ----------------------------------------------------------------
 
-(def current-protocol "TP/0.0")
+(def current-protocol "TP/0.1")
 
-;;; (stack 0) => {:root 123, :protocol "TP/0.0"} ; :root is index number
-;;; (stack 1) => [mapped-obj obj-type-key]
-;;; (stack 2) => ...
+;;; (stack 0) => {:protocol "TP/0.1", ...} ; meta-info
+;;; (stack 1) => [mapped-obj obj-type-key] ; 1 is root
+;;; (stack 2) => [mapped-obj obj-type-key] ; 2 and others are children
+;;; (stack 3) => ...
 (declare ^:private ^:dynamic stack)
 (declare ^:private ^:dynamic cache) ; {obj idx, ...} or {idx obj, ...}
+(declare ^:private ^:dynamic ext) ; {}
   
 (declare ^:private obj->idx ^:private idx->obj)
 
@@ -34,8 +37,8 @@
                           (conj prev (obj->idx one)))
                         #{}
                         obj) :set]
-    ;; TODO: list? 等の個別対応(coll?だけだと()と[]がいっしょくたになる為)
-    (coll? obj) [(doall (map obj->idx obj)) :coll] ; NB: this is fallback
+    (seq? obj) [(doall (map obj->idx obj)) :seq]
+    (coll? obj) [(doall (map obj->idx obj)) :coll]
     ;; TODO: ここから下はclassを見てディスパッチするようにする
     (atom? obj) [(obj->idx @obj) :atom]
     (ref? obj) [(obj->idx @obj) :ref]
@@ -50,7 +53,7 @@
     (array? "[D" obj) [(seq obj) :double-array]
     :else [obj nil]))
 
-(defn- unmapping [mapped-obj mtype]
+(defn- unmapping-1 [mapped-obj mtype]
   (case mtype
     nil mapped-obj
     :map (reduce (fn [prev [k v]]
@@ -61,10 +64,8 @@
                    (conj prev (idx->obj one)))
                  #{}
                  mapped-obj)
-    :coll (doall (map idx->obj mapped-obj))
-    :atom (atom (idx->obj mapped-obj))
-    :ref (ref (idx->obj mapped-obj))
-    :object-array (object-array (doall (map idx->obj mapped-obj)))
+    :seq (doall (map idx->obj mapped-obj))
+    :coll (vec (doall (map idx->obj mapped-obj)))
     :boolean-array (boolean-array mapped-obj)
     :byte-array (byte-array mapped-obj)
     :short-array (short-array mapped-obj)
@@ -73,50 +74,84 @@
     :long-array (long-array mapped-obj)
     :float-array (float-array mapped-obj)
     :double-array (double-array mapped-obj)
+    ;:atom (atom (idx->obj mapped-obj))
+    ;:ref (ref (idx->obj mapped-obj))
+    ;:object-array (object-array (doall (map idx->obj mapped-obj)))
+    :atom (atom mapped-obj)
+    :ref (ref mapped-obj)
+    :object-array (object-array mapped-obj)
     ))
+
+(defn- unmapping-2! [obj mtype]
+  (case mtype
+    :atom (swap! obj idx->obj)
+    :ref (dosync (alter obj idx->obj))
+    :object-array (let [^"[Ljava.lang.Object;" o obj]
+                    (dotimes [i (alength o)]
+                      (aset o i (idx->obj (aget o i)))))
+    nil))
 
 
 
 (defn- obj->idx [src-obj]
-  ;; TODO: must be safe recur
+  ;; TODO: must be safe from stack overflow
   (if-let [idx (cache src-obj)]
     idx
-    (let [mapped-obj (mapping src-obj)]
-      (set! stack (conj stack mapped-obj))
-      (let [idx (dec (count stack))]
-        (set! cache (assoc cache src-obj idx))
-        idx))))
+    (let [idx (count stack)]
+      (set! stack (conj stack (delay (mapping src-obj)))) ; reserve to entry
+      (set! cache (assoc cache src-obj idx))
+      (force (stack idx))
+      idx)))
 
 (defn- idx->obj [idx]
-  ;; TODO: must be safe recur
+  ;; TODO: must be safe from stack overflow
   (if-let [cached (cache idx)]
     cached
     (let [[mapped-obj mtype] (stack idx)
-          obj (unmapping mapped-obj mtype)]
+          obj (unmapping-1 mapped-obj mtype)]
       (set! cache (assoc cache idx obj))
       obj)))
 
 
-(defn- make-meta-info [root-idx]
-  {:root root-idx
-   :protocol current-protocol
+(defn- make-meta-info []
+  ;; TODO: add more meta-info
+  {:protocol current-protocol
    })
 
 ;;; TODO: 将来はextにmapを指定する事で、シリアライズ/デシリアライズ可能な
-;;;       クラスを追加できるようにする
+;;;       クラスを追加できるようにする(今は未実装)
 
-(defn pack [root-obj & [ext]]
+(defn pack [root-obj & [user-ext]]
   ;; TODO: must be thread safe
   (binding [stack [0]
-            cache {}]
-    (into [(make-meta-info (obj->idx root-obj))]
-          (rest stack))))
+            cache {}
+            ext user-ext]
+    (obj->idx root-obj)
+    (into [(make-meta-info)]
+          (map deref (rest stack)))))
 
-(defn unpack [packed & [ext]]
+;;; NB: 環状参照構造を再現するには、まずatom/ref/object-arrayといった、
+;;;     参照元の本体だけを作成してから、後から中身をset!する必要がある。
+;;;     (srfi-38等のないclojureでは、これ以外に環状参照を作る方法はない、多分)
+;;;     よって、最初は中身のunmappingはしないで生成し、後で再設定を行う。
+;;;     これは将来にRecord型等をユーザサイドで追加する際に問題となりそうだが、
+;;;     とりあえず今はこの方針で行く事にした。
+(defn unpack [packed & [user-ext]]
   ;; TODO: must be thread safe
-  (binding [stack packed
-            cache {}]
-    (let [meta-info (packed 0)]
-      ;; TODO: check protocol
-      (idx->obj (:root meta-info)))))
+  (let [meta-info (packed 0)]
+    ;; TODO: check protocol
+    (binding [stack packed
+              cache {}
+              ext user-ext]
+      ;; extract all stacks
+      (dotimes [i (count stack)]
+        (when-not (zero? i)
+          (idx->obj i)))
+      ;; fix mutable objects
+      (dotimes [i (count stack)]
+        (when-not (zero? i)
+          (let [[mapped-obj mtype] (stack i)]
+            (unmapping-2! (cache i) mtype))))
+      ;; return root-obj
+      (idx->obj 1))))
 
