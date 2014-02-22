@@ -11,6 +11,8 @@
   (dissoc nippy/stress-data
           :throwable :ex-info :exception :stress-record :bytes))
 
+(def record-data {:stress-record (:stress-record nippy/stress-data)})
+
 (def mutable-data
   {:atom (atom 1)
    :ref (ref :a)
@@ -42,6 +44,16 @@
                   (throw (Exception. "cannot match")))))
             stress-data)))
     (is stress-data (unpack (pack stress-data))))
+  (testing "pack->unpack record-data"
+    (is (doall
+          (map
+            (fn [[k v]]
+              (let [v2 (unpack (pack v))]
+                (when-not (= v v2)
+                  (prn "cannot match" k v v2)
+                  (throw (Exception. "cannot match")))))
+            record-data)))
+    (is record-data (unpack (pack record-data))))
   (testing "pack->unpack mutable-data"
     (let [original mutable-data
           target (unpack (pack mutable-data))]
@@ -69,9 +81,11 @@
                        (throw e))))
                  m))
       stress-data
+      record-data
       mutable-data)
     (are [m] (edn/read-string (pr-str (pack m)))
       stress-data
+      record-data
       mutable-data)
     )
   (testing "isomorphic?"
