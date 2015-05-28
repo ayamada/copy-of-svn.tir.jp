@@ -6,7 +6,7 @@ INSTALL = @INSTALL@
 
 NAME = pib
 
-TARGET_FILES = $(shell find .|grep '\.scm')
+TARGET_FILES = $(shell find . -name '*.scm')
 
 
 GENERATED = 
